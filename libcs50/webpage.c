@@ -1,15 +1,15 @@
-/* 
+/*
  * webpage - utility functions for downloading, saving, and loading web pages.
  *           See webpage.h for usage.
  *
  * Ira Ray Jenkins - April 2014
- * 
+ *
  * Updated by David Kotz - April 2016, July 2017
  * Updated by Xia Zhou - July 2016
  *
  */
 
-/* students shouldn't take advantage of the gnu extensions, 
+/* students shouldn't take advantage of the gnu extensions,
  * but parsing html without them is a pain.
  */
 #define _GNU_SOURCE	      // strncasecmp, strdup
@@ -56,7 +56,7 @@ static void RemoveWhitespace(char* str);
 static char *FixupRelativeURL(char *base, char *rel, size_t len);
 static bool ParseURL(char* str, struct URL* url);
 static void FreeURL(struct URL url);
-static bool BurstURL(const char *url, char **hostname, 
+static bool BurstURL(const char *url, char **hostname,
 		     int *port, char **pathname);
 #ifdef DEBUG
 static void PrintURL(struct URL url);
@@ -82,14 +82,14 @@ static const char* EXTS[] = {	 // valid extensions
 
 /* *********************************************************************** */
 /* getter methods */
-int   webpage_getDepth(const webpage_t *page) { 
+int   webpage_getDepth(const webpage_t *page) {
   return page ? page->depth : 0;
 }
-char *webpage_getHTML(const webpage_t *page)  { 
+char *webpage_getHTML(const webpage_t *page)  {
   return page ? page->html  : NULL;
 }
-char *webpage_getURL(const webpage_t *page)   { 
-  return page ? page->url   : NULL; 
+char *webpage_getURL(const webpage_t *page)   {
+  return page ? page->url   : NULL;
 }
 
 /**************** webpage_new ****************/
@@ -131,16 +131,16 @@ webpage_delete(void *data)
  *   * can only handle http (not https or other schemes)
  *   * can only handle URLs of form http://host[:port][/pathname]
  *   * cannot handle redirects (HTTP 301 or 302 response codes)
- * 
+ *
  * Pseudocode:
- *     1. check for valid page 
+ *     1. check for valid page
  *     2. parse url into hostname, port, and filename
  *     3. open a connection to the given host
  *     4. send http request
  *     5. fetch html response
  *     6. cleanup
  */
-bool 
+bool
 webpage_fetch(webpage_t *page)
 {
   // check webpage structure - must have URL and not yet have HTML
@@ -157,8 +157,8 @@ webpage_fetch(webpage_t *page)
     return false;
   }
 
-  // attempt to connect to server 
-  FILE *http_fp = NULL; 
+  // attempt to connect to server
+  FILE *http_fp = NULL;
   for (int try = 0;  http_fp == NULL && try < MAX_TRY; try++) {
     // open connection - exit on error
     http_fp = ConnectToHost(hostname, port);
@@ -211,7 +211,7 @@ webpage_fetch(webpage_t *page)
 	if (html != NULL) {
 	  page->html = html;
 	  success = true;
-	} 
+	}
       }
     }
     free(httpResponse);
@@ -228,7 +228,7 @@ webpage_fetch(webpage_t *page)
 /*
  * webpage_getNextWord - returns the next word from doc[pos] into word
  * See "webpage.h" for full documentation.
- * Code is courtesy of Ray Jenkins and/or Charles Palmer, 
+ * Code is courtesy of Ray Jenkins and/or Charles Palmer,
  *   cleaned by David Kotz in April 2016, 2017.
  *
  * Pseudocode:
@@ -239,13 +239,13 @@ webpage_fetch(webpage_t *page)
  *     5. create a new word buffer
  *     6. copy the word into the new buffer
  *     7. return first position past end of word
- * 
+ *
  * Assumptions:
  *     1. webpage has html
  *     2. don't care about opening/closing tags: ignore anything between <...>
  *     3. if the html is malformed, we don't care: match '<' with next '>'
  */
-int 
+int
 webpage_getNextWord(webpage_t *page, int pos, char **word)
 {
   // make sure we have something to search, and a place for the result
@@ -262,7 +262,7 @@ webpage_getNextWord(webpage_t *page, int pos, char **word)
     // if we find a tag, i.e., <...tag...>, skip it
     if (doc[pos] == '<') {
       end = strchr(&doc[pos], '>');    // find the close
-      
+
       if (end == NULL || *(++end) == '\0') { // ran out of html
 	return -1;
       }
@@ -328,7 +328,7 @@ webpage_getNextWord(webpage_t *page, int pos, char **word)
  *     9. fixup relative links
  *    10. create new character buffer for result and return it
  */
-int 
+int
 webpage_getNextURL(webpage_t *page, int pos, char **result)
 {
   // make sure we have text and base url
@@ -413,8 +413,8 @@ webpage_getNextURL(webpage_t *page, int pos, char **result)
 
     // is the url absolute, i.e, ':' must precede any '/', '?', or '#'
     ptr = strpbrk(href, ":/?#");
-    if (!ptr || *ptr != ':') { 
-      relative = 1; 
+    if (!ptr || *ptr != ':') {
+      relative = 1;
     } else if (strncasecmp(href, "http", 4)) { // absolute, but not http(s)
       bad_link = 1; pos += 2; continue;
     }
@@ -453,8 +453,8 @@ webpage_getNextURL(webpage_t *page, int pos, char **result)
  *     5. remove dot segments and lowercase scheme and host
  *     6. put the url back together
  */
-bool 
-NormalizeURL(char *url) 
+bool
+NormalizeURL(char *url)
 {
   bool status = true;
   int valid_ext;
@@ -536,7 +536,7 @@ NormalizeURL(char *url)
   // Remove trailing slash [DFK 2017].
   // This code allows crawler to realize that
   //    http://www.cs.dartmouth.edu == http://www.cs.dartmouth.edu/
-  // but doing so actually prevents the crawler from following the 
+  // but doing so actually prevents the crawler from following the
   // server's implicit redirect to http://www.cs.dartmouth.edu/index.html
   // So, I've decided not to include it.
   if (*url != '\0') {
@@ -583,7 +583,7 @@ IsInternalURL(char *url)
 /***********************************************************************
  * ParseURL - attempts to parse str into a URL struct
  * @str: absolute url to parse
- * @url: pointer to a struct containing parts of a url; 
+ * @url: pointer to a struct containing parts of a url;
  *       inbound, its members are assumed uninitialized
  *       outbound, its members are initialized to NULL or malloc'd memory.
  *       Caller is later responsible for calling FreeURL(url) to free that space.
@@ -630,7 +630,7 @@ ParseURL(char* str, struct URL* url)
   url->path = NULL;
   url->query = NULL;
   url->fragment = NULL;
-  
+
   // make sure absolute url, i.e., ':' must preceede any '/', '?', or '#'
   scheme_end = strpbrk(str, ":/?#");
   if (!scheme_end || *scheme_end != ':') {
@@ -763,7 +763,7 @@ ParseURL(char* str, struct URL* url)
 /* ****************** FreeURL ***************************** */
 /* free the members of the URL struct - but not the struct itself.
  */
-static void 
+static void
 FreeURL(struct URL url)
 {
   if (url.scheme) { free(url.scheme); }
@@ -779,7 +779,7 @@ FreeURL(struct URL url)
 /* ****************** PrintURL ***************************** */
 /* Print members of the URL struct - for debugging.
  */
-static void 
+static void
 PrintURL(struct URL url)
 {
   printf("URL ");
@@ -797,19 +797,19 @@ PrintURL(struct URL url)
 /* Burst the URL into components (hostname, port, pathname).
  *
  * Input: URL, assumed non-NULL and already normalized.
- * 
+ *
  * Output: fill in the other parameters:
  *   a pointer to new string containing the hostname
  *   an integer representing the port
  *   a pointer to new string containing the pathname.
  * and
- *   return true if successful. 
- * 
+ *   return true if successful.
+ *
  * If success, the hostname and pathname must be free'd later.
- * Each string is allocated enough space to hold the whole URL, 
+ * Each string is allocated enough space to hold the whole URL,
  * which is more than necessary, allowing a little growth if needed.
- * 
- * BurstURL is much simpler than ParseURL and is used by 
+ *
+ * BurstURL is much simpler than ParseURL and is used by
  * webpage_fetch because it can't handle anything other than simple
  * http://hostname[:port][/path] forms of URL anyway.
  */
@@ -857,7 +857,7 @@ BurstURL(const char *url, char **hostname, int *port, char **pathname)
 
 
 /* ********************* ConnectToHost ************************** */
-/* Connect to the given hostname and port, 
+/* Connect to the given hostname and port,
  * returning an open FILE* for the socket,
  * or NULL on failure.
  */
@@ -882,7 +882,7 @@ ConnectToHost(const char *hostname, const int port)
     return NULL;
   }
 
-  // And connect that socket to that server   
+  // And connect that socket to that server
   if (connect(comm_sock, (struct sockaddr *) &server, sizeof(server)) < 0) {
     return NULL;
   }
@@ -1158,7 +1158,7 @@ RemoveWhitespace(char* str)
 
 /* **************** isBlankLine ******************/
 /* Input: line, a non-NULL pointer to a string.
- * Return true if the string is pointing to a blank line, that is, 
+ * Return true if the string is pointing to a blank line, that is,
  * an empty string, or
  * with only newline (LF), only carriage return (CR), or only CRLF.
  */
@@ -1166,7 +1166,7 @@ static inline bool
 isBlankLine(const char *line)
 {
   return (   (line[0] == '\0')
-	  || (strcmp(line, "\n") == 0) 
-	  || (strcmp(line, "\r") == 0) 
+	  || (strcmp(line, "\n") == 0)
+	  || (strcmp(line, "\r") == 0)
 	  || (strcmp(line, "\r\n") == 0));
 }

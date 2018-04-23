@@ -1,8 +1,8 @@
-/* 
+/*
  * webpage - utility functions for downloading, saving, and loading web pages
  *
  * Ira Ray Jenkins - April 2014
- * 
+ *
  * Updated by David Kotz - April 2016, 2017
  *
  */
@@ -29,7 +29,7 @@ char *webpage_getHTML(const webpage_t *page);
  * Do NOT fetch the html from url; instead, the
  * caller can fetch it later with webpage_fetch().
  * Parameters:
- *   url   must be non-null; its string is copied. 
+ *   url   must be non-null; its string is copied.
  *   depth must be non-negative.
  *   html  may be null; the pointer is copied, but the string is NOT copied.
  * Returns NULL on any error.
@@ -47,10 +47,10 @@ void webpage_delete(void *data);
 /* retrieve HTML from page->url, store into page->html
  * @page: the webpage struct containing the url to fetch
  *
- * Returns true if the fetch was successful; otherwise, false. 
- * If the fetch succeeded, page->html will contain the content retrieved. 
- * Parameter 'page' should have been allocated by the caller, 
- * but the page->html pointer is expected to be NULL. 
+ * Returns true if the fetch was successful; otherwise, false.
+ * If the fetch succeeded, page->html will contain the content retrieved.
+ * Parameter 'page' should have been allocated by the caller,
+ * but the page->html pointer is expected to be NULL.
  * If this function is successful, a new, null-terminated character
  * buffer will be allocated as page->html. The caller must later free this
  * memory, typically by calling webpage_delete().
@@ -71,7 +71,7 @@ void webpage_delete(void *data);
  * Returns:
  *     True: success; caller must later free html via webpage_delete(page).
  *     False: some error fetching page.
- * 
+ *
  * Limitations:
  *   * can only handle http (not https or other schemes)
  *   * can only handle URLs of form http://host[:port][/pathname]
@@ -107,7 +107,7 @@ bool webpage_fetch(webpage_t *page);
  *
  * Memory contract:
  *     1. inbound, webpage points to an existing struct, with existing html;
- *     2. on return, *word points to malloc'd space 
+ *     2. on return, *word points to malloc'd space
  *                   and the caller is responsible for freeing that space.
  */
 
@@ -140,7 +140,7 @@ int webpage_getNextWord(webpage_t *page, int pos, char **word);
  *
  * Memory contract:
  *     1. inbound, webpage points to an existing struct, with existing html;
- *     2. on return, *result points to malloc'd space 
+ *     2. on return, *result points to malloc'd space
  *                   and the caller is responsible for freeing that space.
  */
 
@@ -150,10 +150,10 @@ int webpage_getNextURL(webpage_t *page, int pos, char **result);
  * NormalizeURL - attempts to normalize the url
  * @url: absolute url to normalize
  *
- * Returns true on success; 
+ * Returns true on success;
  * returns false if the url can't be parsed or normalized.
  * returns false if the url refers to a file unlikely to contain html.
- * 
+ *
  * Usage example:
  * char* url = calloc(100, sizeof(char));
  * strcpy(url, "HTTP://UsEr:PaSs@www.EXAMPLE.com/path/.././file.html?name=val#top");
@@ -166,13 +166,13 @@ bool NormalizeURL(char *url);
 
 
 /***********************************************************************
- * IsInternalURL - 
+ * IsInternalURL -
  * @url: absolute url to normalize and verify
  *
  * Normalizes URL as a side effect.
- * Returns true if the URL is valid and 'internal' to our domain, 
+ * Returns true if the URL is valid and 'internal' to our domain,
  * returns false otherwise.
- * 
+ *
  * "valid" means that NormalizeURL() returns true;
  * "internal" means that the url begins with INTERNAL_URL_PREFIX.
  */

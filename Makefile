@@ -7,9 +7,10 @@ MAKE = make
 .PHONY: all valgrind clean
 
 ############## default: make all libs and programs ##########
-all: 
+all:
 	$(MAKE) -C libcs50
 	$(MAKE) -C common
+	$(MAKE) -C crawler
 
 ############## valgrind all programs ##########
 valgrind: all
@@ -25,4 +26,4 @@ clean:
 	rm -f TAGS
 	$(MAKE) -C libcs50 clean
 	$(MAKE) -C common clean
-
+	$(MAKE) -C crawler clean
