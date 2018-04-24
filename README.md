@@ -1,5 +1,7 @@
-# CS50 Tiny Search Engine
+# 'Tiny' Search Engine
 ## Graeme Gengras - Spring 2018
+
+In the midst of development ...
 
 To build, run `make`.
 
