@@ -127,9 +127,9 @@ int crawler(char *seedURL, char *pageDirectory, int maxDepth)
         // If webpage depth < maxDepth find links
         if (webpage_getDepth(currentPage) < maxDepth) {
             int depth = webpage_getDepth(currentPage);
-            int URLnum = 0;
+            int pos = 0;
             char *URL = NULL;
-            while (webpage_getNextURL(currentPage, URLnum, &URL) > 0) {
+            while ((pos = webpage_getNextURL(currentPage, pos, &URL)) > 0) {
                 // Normalize the URL, make sure it's internal to Dartmouth
                 if (NormalizeURL(URL) && IsInternalURL(URL)) {
                     printf("%s\n", URL);
@@ -143,7 +143,6 @@ int crawler(char *seedURL, char *pageDirectory, int maxDepth)
                         // If it was already in hashtable do nothing
                 }
                 free(URL);
-                URLnum += 1;
             }
         }
         id += 1; // Increment ID
