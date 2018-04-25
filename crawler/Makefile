@@ -5,12 +5,15 @@
 
 # Compiler and flags
 CC=gcc
-CFLAGS=-Wall -pedantic -std=c11 -ggdb -I ../libcs50 -L ../libcs50 -lcs50
-PROG = crawler
+CFLAGS=-Wall -pedantic -std=c11 -ggdb
+PROG=crawler
 
 .PHONY: test clean newoutput
 
 all: $(PROG)
+
+$(PROG):
+	$(CC) $(CFLAGS) $(PROG).c -o $(PROG) -I ../libcs50 -L ../libcs50 -lcs50
 
 test: $(OBJS)
 	make all
