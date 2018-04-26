@@ -8,9 +8,12 @@ CC=gcc
 CFLAGS=-Wall -pedantic -std=c11 -ggdb -I ../libcs50 -L ../libcs50 -lcs50
 PROG=crawler
 
-.PHONY: test clean newoutput
-
 all: $(PROG)
+
+$(PROG): $(PROG).c
+	$(CC) -o $@ $< $(CFLAGS)
+
+.PHONY: test clean newoutput
 
 test: $(OBJS)
 	make all

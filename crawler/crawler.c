@@ -14,6 +14,8 @@
 #include "bag.h"
 #include "hashtable.h"
 
+#define _GNU_SOURCE
+
 // * * * * * * * * Function Declarations * * * * * * * * //
 //          See implementation section for details       //
 
