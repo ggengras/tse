@@ -137,8 +137,10 @@ int crawler(char *seedURL, char *pageDirectory, int maxDepth)
                         printf("%s\n", URL);
                         // Add new webpage to the bag of webpages to be crawled
                         bag_insert(crawlList, newPage);
-                    }
+                    } else {
                         // If it was already in hashtable do nothing
+                        webpage_delete(newPage);
+                    }
                 }
                 free(URL);
             }
@@ -148,8 +150,8 @@ int crawler(char *seedURL, char *pageDirectory, int maxDepth)
 
 
     // Clean up data structure
-    hashtable_delete(seenURLS, webpageDelete);
-    bag_delete(crawlList, webpageDelete);
+    hashtable_delete(seenURLS, webpage_delete);
+    bag_delete(crawlList, webpage_delete);
     return 0;
 }
 
@@ -191,22 +193,6 @@ void pageSaver(webpage_t *page, char *pageDirectory, int ID)
     free(strID);
     free(filename);
     fclose(outputFile);
-}
-
-/* *
- * webpageDelete -----
- *
- * Arguments -----
- * page: webpage with non-NULL URL, depth, HTML
- * pageDirectory: existing directory to save files
- *
- *
- *
- *
- */
-void webpageDelete(void *item)
-{
-    webpage_delete(item);
 }
 
 /* *
