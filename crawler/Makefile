@@ -17,7 +17,7 @@ $(PROG): $(PROG).c
 
 test: $(OBJS)
 	make all
-	./$(PROG) http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/ output 10
+	./$(PROG) http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/ output 3
 
 clean:
 	rm -f *~ *.o

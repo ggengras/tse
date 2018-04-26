@@ -206,7 +206,7 @@ void pageSaver(webpage_t *page, char *pageDirectory, int ID)
  */
 void webpageDelete(void *item)
 {
-
+    webpage_delete(item);
 }
 
 /* *
