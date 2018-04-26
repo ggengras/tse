@@ -97,8 +97,6 @@ int crawler(char *seedURL, char *pageDirectory, int maxDepth)
     // This would be reasonable for most average sites
     // but not for many popular sites, reddit, news, etc.
     hashtable_t *seenURLS = hashtable_new(maxDepth * 100);
-    printf("%d\n", maxDepth * 100);
-
 
     // Add seedURL the bag of webpages to crawl
     bag_insert(crawlList, seedPage);
@@ -117,7 +115,6 @@ int crawler(char *seedURL, char *pageDirectory, int maxDepth)
 
     int id = 1; // store 'ID' of pages we crawl
     while ((currentPage = bag_extract(crawlList)) != NULL) {
-        printf("New page\n");
         // pagefetch html for the URL AND pause for one second
         webpage_fetch(currentPage);
 
@@ -132,11 +129,10 @@ int crawler(char *seedURL, char *pageDirectory, int maxDepth)
             while ((pos = webpage_getNextURL(currentPage, pos, &URL)) > 0) {
                 // Normalize the URL, make sure it's internal to Dartmouth
                 if (NormalizeURL(URL) && IsInternalURL(URL)) {
-                    printf("%s\n", URL);
-                    printf("%d\n", URLnum);
                     // Try to insert URL in hashtable
                     webpage_t *newPage = webpage_new(URL, depth + 1, NULL);
-                    if (hashtable_insert(seenURLS, URL, NULL)) {
+                    if (hashtable_insert(seenURLS, URL, newPage)) {
+                        printf("%s\n", URL);
                         // Add new webpage to the bag of webpages to be crawled
                         bag_insert(crawlList, newPage);
                     }
@@ -151,6 +147,7 @@ int crawler(char *seedURL, char *pageDirectory, int maxDepth)
 
     // Clean up data structure
     hashtable_delete(seenURLS, webpageDelete);
+    bag_delete(crawlList, webpageDelete);
     return 0;
 }
 
