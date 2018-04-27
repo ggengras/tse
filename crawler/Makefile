@@ -5,8 +5,7 @@
 
 # Compiler and flags
 CC=gcc
-CFLAGS=-Wall -pedantic -std=c11 -ggdb -I ../libcs50 -L ../libcs50 -lcs50 \
-	-D _GNU_SOURCE
+CFLAGS=-Wall -pedantic -std=c11 -ggdb -I ../libcs50 -L ../libcs50 -lcs50
 PROG=crawler
 
 all: $(PROG)
@@ -29,3 +28,4 @@ clean:
 	rm -rf *.dSYM
 	rm -f $(PROG)
 	rm -rf crawler_test_output
+	rm core
