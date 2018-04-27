@@ -1,9 +1,13 @@
 /* 'Tiny' Search Engine
 *  Graeme Gengras, April 2018
 *
-*  cr
+*
 *
 */
+
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE 1
+#endif
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -13,8 +17,6 @@
 #include "webpage.h"
 #include "bag.h"
 #include "hashtable.h"
-
-#define _GNU_SOURCE
 
 // * * * * * * * * Function Declarations * * * * * * * * //
 //          See implementation section for details       //
@@ -33,7 +35,7 @@ int main(int argc, char *argv[])
     }
 
     // No need to check URL validity here, will be done by crawler
-    // Make sure directory is valid (assumed to exist already)
+    // Make sure pageDirectory is valid (assumed to exist already)
     struct stat dirStatus;
 
     if (stat(argv[2], &dirStatus) == -1) {
@@ -51,7 +53,7 @@ int main(int argc, char *argv[])
     // Make sure maxDepth is an integer
     int maxDepth = -1;
 
-    // Do basic test for integer, doesn't take floats into consideration
+    // Do basic test for integer, **doesn't take floats into consideration**
     if (sscanf(argv[3], "%d", &maxDepth) != 1) {
         fprintf(stderr, "Max depth must be an integer >= 0\n");
         exit(4);
@@ -63,9 +65,6 @@ int main(int argc, char *argv[])
         exit(5);
     }
 
-    // Validate seedURL
-    // Validate pageDirectory
-
     // Crawler will return exit codes
     printf("Crawling %s with depth %d\n", argv[1], maxDepth);
     return crawler(argv[1], argv[2], maxDepth);
@@ -74,10 +73,12 @@ int main(int argc, char *argv[])
 // * * * * * * * * Function Implementation * * * * * * * * //
 
 /* *
- * pageSaver -
- * page: webpage with non-NULL URL, depth, HTML
- * pageDirectory: existing directory to save files
- *
+ * crawler -----
+*
+ * Arguments -----
+ * seedURL:
+ * pageDirectory:
+ * maxDepth:
  *
  *
  *
@@ -100,7 +101,7 @@ int crawler(char *seedURL, char *pageDirectory, int maxDepth)
     // assume an upper limit of ~100 links per webpage
     // This would be reasonable for most average sites
     // but not for many popular sites, reddit, news, etc.
-    hashtable_t *seenURLS = hashtable_new((maxDepth + 1) * 100);
+    hashtable_t *seenURLS = hashtable_new((maxDepth + 1) * 200);
 
     // Add seedURL the bag of webpages to crawl
     bag_insert(crawlList, seedPage);
@@ -123,6 +124,9 @@ int crawler(char *seedURL, char *pageDirectory, int maxDepth)
         // Throw error if we can't connect to seedURL
         if (webpage_fetch(currentPage) == false && currentPage == seedPage) {
             fprintf(stderr, "Error connecting to seedURL\n");
+            // Free memory
+            hashtable_delete(seenURLS, webpage_delete);
+            bag_delete(crawlList, webpage_delete);
             return 8;
         }
 
@@ -130,11 +134,15 @@ int crawler(char *seedURL, char *pageDirectory, int maxDepth)
         if (!IsInternalURL(webpage_getURL(currentPage)) &&
             currentPage == seedPage) {
                 fprintf(stderr, "seedURL non-internal\n");
+                // Free memory
+                hashtable_delete(seenURLS, webpage_delete);
+                bag_delete(crawlList, webpage_delete);
                 return 9;
         }
 
         // pagesave the webpage to pageDirectory with unique ID
         pageSaver(currentPage, pageDirectory, id);
+        printf("    Found: %s\n", webpage_getURL(currentPage));
 
         // If webpage depth < maxDepth find links
         if (webpage_getDepth(currentPage) < maxDepth) {
@@ -148,7 +156,6 @@ int crawler(char *seedURL, char *pageDirectory, int maxDepth)
                     // Try to insert URL in hashtable
                     webpage_t *newPage = webpage_new(URL, depth + 1, NULL);
                     if (hashtable_insert(seenURLS, URL, newPage)) {
-                        printf("    Found: %s\n", URL);
                         // Add new webpage to the bag of webpages to be crawled
                         bag_insert(crawlList, newPage);
                     } else {
@@ -163,7 +170,7 @@ int crawler(char *seedURL, char *pageDirectory, int maxDepth)
         id += 1; // Increment ID
     }
 
-    // Clean up data structure
+    // Free memory
     hashtable_delete(seenURLS, webpage_delete);
     bag_delete(crawlList, webpage_delete);
     return 0;
@@ -177,16 +184,12 @@ int crawler(char *seedURL, char *pageDirectory, int maxDepth)
  * page: webpage with non-NULL URL, depth, HTML
  * pageDirectory: existing directory to save files
  * id: unique id # of page
- *
- *
- *
  */
 void pageSaver(webpage_t *page, char *pageDirectory, int ID)
 {
     // Convert ID to a string
     char *strID;
     asprintf(&strID, "%d", ID); // Mallocs space!!
-
 
     // Allocate memory for filename and write in form of 'pageDirectory/strID'
     char *filename = calloc(strlen(pageDirectory) + strlen(strID) + 2,
@@ -207,21 +210,4 @@ void pageSaver(webpage_t *page, char *pageDirectory, int ID)
     free(strID);
     free(filename);
     fclose(outputFile);
-}
-
-/* *
- * strPrint -----
-*
- * Arguments -----
- * page: webpage with non-NULL URL, depth, HTML
- * pageDirectory: existing directory to save files
- *
- *
- *
- *
- */
-void strPrint(FILE *fp, void *item)
-{
-    int str = webpage_getDepth(item);
-    printf("%d", str);
 }
