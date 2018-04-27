@@ -19,7 +19,7 @@ then
     make all
 fi
 
-# If testdir exists, remove it and make a fresh copy
+# If testdir exists remove it and make a fresh copy
 if [ -e "$TESTDIR" ]
 then
     if [ ! -w $TESTDIR ]
