@@ -29,8 +29,8 @@ then
     fi
 
     rm -rf $TESTDIR
-    mkdir $TESTDIR
 fi
+mkdir $TESTDIR
 
 ##### Argument Tests #####
 mkdir $TESTDIR/argtest
