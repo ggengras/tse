@@ -28,4 +28,3 @@ clean:
 	rm -rf *.dSYM
 	rm -f $(PROG)
 	rm -rf crawler_test_output
-	rm core
