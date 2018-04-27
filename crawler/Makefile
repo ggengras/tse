@@ -13,14 +13,9 @@ all: $(PROG)
 $(PROG): $(PROG).c
 	$(CC) -o $@ $< $(CFLAGS)
 
-testcrawler_unit: testcrawler_unit.c crawler.c
-	$(CC) -o $@ $< $(CFLAGS)
-
 .PHONY: test clean newoutput
 
-test: $(PROG) testcrawler_unit
-	echo Running Unit Tests
-	./testcrawler_unit
+test: $(PROG)
 	echo Running Integration Tests
 	./testcrawler_int.sh
 
