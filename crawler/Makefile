@@ -13,17 +13,15 @@ all: $(PROG)
 $(PROG): $(PROG).c
 	$(CC) -o $@ $< $(CFLAGS)
 
+testcrawler: testcrawler.c crawler.c
+
 .PHONY: test clean newoutput
 
-test: $(OBJS)
-	make all
-	./$(PROG) http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/ output 3
+test: $(PROG)
+	./testcrawler_int.sh
 
 clean:
 	rm -f *~ *.o
 	rm -rf *.dSYM
 	rm -f $(PROG)
-
-newoutput:
-	rm -rf output
-	mkdir output
+	rm -rf crawler_test_output
