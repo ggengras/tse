@@ -127,8 +127,8 @@ do
 done
 
 # Crawl http://old-www.cs.dartmouth.edu/~cs50/data/tse/wikipedia
-# with depths 0-2
-for i in $(seq 0 2)
+# with depths 0-1 (depth 2 takes hours to run)
+for i in $(seq 0 1)
 do
     mkdir $TESTDIR/servertest/test3_depth$i
     echo Crawl results for \
