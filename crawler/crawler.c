@@ -1,7 +1,7 @@
 /* 'Tiny' Search Engine
 *  Graeme Gengras, April 2018
 *
-*
+*  cr
 *
 */
 
@@ -21,8 +21,6 @@
 
 int crawler(char *seedURL, char *pageDirectory, int maxDepth);
 void pageSaver(webpage_t *page, char *pageDirectory, int ID);
-void webpageDelete(void *item);
-void urlDelete(void *item);
 void strPrint(FILE *fp, void *item);
 
 int main(int argc, char *argv[])
@@ -48,9 +46,12 @@ int main(int argc, char *argv[])
         exit(3);
     }
 
-    // Make sure maxDepth is an integer
-    int maxDepth;
+    // ADD IGNORING NON-EMPTY DIRECTORIES / NON WRITABLE
 
+    // Make sure maxDepth is an integer
+    int maxDepth = -1;
+
+    // Do basic test for integer, doesn't take floats into consideration
     if (sscanf(argv[3], "%d", &maxDepth) != 1) {
         fprintf(stderr, "Max depth must be an integer >= 0\n");
         exit(4);
@@ -66,6 +67,7 @@ int main(int argc, char *argv[])
     // Validate pageDirectory
 
     // Crawler will return exit codes
+    printf("Crawling %s with depth %d\n", argv[1], maxDepth);
     return crawler(argv[1], argv[2], maxDepth);
 }
 
@@ -98,7 +100,7 @@ int crawler(char *seedURL, char *pageDirectory, int maxDepth)
     // assume an upper limit of ~100 links per webpage
     // This would be reasonable for most average sites
     // but not for many popular sites, reddit, news, etc.
-    hashtable_t *seenURLS = hashtable_new(maxDepth * 100);
+    hashtable_t *seenURLS = hashtable_new((maxDepth + 1) * 100);
 
     // Add seedURL the bag of webpages to crawl
     bag_insert(crawlList, seedPage);
@@ -118,13 +120,25 @@ int crawler(char *seedURL, char *pageDirectory, int maxDepth)
     int id = 1; // store 'ID' of pages we crawl
     while ((currentPage = bag_extract(crawlList)) != NULL) {
         // pagefetch html for the URL AND pause for one second
-        webpage_fetch(currentPage);
+        // Throw error if we can't connect to seedURL
+        if (webpage_fetch(currentPage) == false && currentPage == seedPage) {
+            fprintf(stderr, "Error connecting to seedURL\n");
+            return 8;
+        }
+
+        // Make sure seedURL is internal
+        if (!IsInternalURL(webpage_getURL(currentPage)) &&
+            currentPage == seedPage) {
+                fprintf(stderr, "seedURL non-internal\n");
+                return 9;
+        }
 
         // pagesave the webpage to pageDirectory with unique ID
         pageSaver(currentPage, pageDirectory, id);
 
         // If webpage depth < maxDepth find links
         if (webpage_getDepth(currentPage) < maxDepth) {
+            printf("Crawling: %s\n", webpage_getURL(currentPage));
             int depth = webpage_getDepth(currentPage);
             int pos = 0;
             char *URL = NULL;
@@ -134,20 +148,20 @@ int crawler(char *seedURL, char *pageDirectory, int maxDepth)
                     // Try to insert URL in hashtable
                     webpage_t *newPage = webpage_new(URL, depth + 1, NULL);
                     if (hashtable_insert(seenURLS, URL, newPage)) {
-                        printf("%s\n", URL);
+                        printf("    Found: %s\n", URL);
                         // Add new webpage to the bag of webpages to be crawled
                         bag_insert(crawlList, newPage);
                     } else {
-                        // If it was already in hashtable do nothing
+                        // If it was already in hashtable do nothing, clean up
                         webpage_delete(newPage);
                     }
                 }
                 free(URL);
             }
+            printf("\n");
         }
         id += 1; // Increment ID
     }
-
 
     // Clean up data structure
     hashtable_delete(seenURLS, webpage_delete);
@@ -193,22 +207,6 @@ void pageSaver(webpage_t *page, char *pageDirectory, int ID)
     free(strID);
     free(filename);
     fclose(outputFile);
-}
-
-/* *
- * urlDelete -----
- *
- * Arguments -----
- * page: webpage with non-NULL URL, depth, HTML
- * pageDirectory: existing directory to save files
- *
- *
- *
- *
- */
-void urlDelete(void *item)
-{
-
 }
 
 /* *
