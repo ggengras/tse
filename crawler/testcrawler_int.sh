@@ -66,12 +66,6 @@ if [ $? != 0 ]; then
    echo "Arg Test 5 Failed"
 fi
 
-./crawler http://old-www.cs.dartmouth.edu/ $TESTDIR/argtest 5.5 \
-    2>&1 1>/dev/null | grep 'Max depth must be an integer >= 0' &> /dev/null
-if [ $? != 0 ]; then
-   echo "Arg Test 6 Failed"
-fi
-
 rm $TESTDIR/dummy
 
 ##### Invalid Server Tests #####
