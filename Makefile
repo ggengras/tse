@@ -9,12 +9,8 @@ MAKE = make
 ############## default: make all libs and programs ##########
 all:
 	$(MAKE) -C libcs50
-	$(MAKE) -C common
+	#$(MAKE) -C common
 	$(MAKE) -C crawler
-
-############## valgrind all programs ##########
-valgrind: all
-	$(MAKE) -C crawler valgrind
 
 ############### TAGS for emacs users ##########
 TAGS:  Makefile */Makefile */*.c */*.h */*.md */*.sh
@@ -25,5 +21,5 @@ clean:
 	rm -f *~
 	rm -f TAGS
 	$(MAKE) -C libcs50 clean
-	$(MAKE) -C common clean
+	#$(MAKE) -C common clean
 	$(MAKE) -C crawler clean
