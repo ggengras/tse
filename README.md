@@ -7,6 +7,9 @@ To build, run `make`.
 
 To clean up, run `make clean`.
 
+There is NO global `make test` yet, to test the crawler go to the crawler
+directory and `make test`.
+
 *Only* run the crawler on this domain to keep everyone happy:
 `http://old-www.cs.dartmouth.edu/~cs50/data/tse`
 
