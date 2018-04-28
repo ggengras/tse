@@ -1,8 +1,10 @@
 /* 'Tiny' Search Engine
 *  Graeme Gengras, April 2018
 *
-*
-*
+* crawler.c - Implements a web crawler that, given a seedURL, will scrape
+* the website, its links, links of links, etc. to a given maxDepth.  Output is
+* a series of files representing each unique link seen by the crawler.  Each
+* file contains the URL, depth at which the URL was found, and html of the page.
 */
 
 #ifndef _GNU_SOURCE
@@ -23,7 +25,6 @@
 
 int crawler(char *seedURL, char *pageDirectory, int maxDepth);
 void pageSaver(webpage_t *page, char *pageDirectory, int ID);
-void strPrint(FILE *fp, void *item);
 
 int main(int argc, char *argv[])
 {
@@ -66,7 +67,7 @@ int main(int argc, char *argv[])
     }
 
     // Crawler will return exit codes
-    printf("Crawling %s with depth %d\n", argv[1], maxDepth);
+    printf("Crawling %s with depth %d...\n", argv[1], maxDepth);
     return crawler(argv[1], argv[2], maxDepth);
 }
 
@@ -74,14 +75,13 @@ int main(int argc, char *argv[])
 
 /* *
  * crawler -----
-*
+ * Given a seedURL, finds all links at that URL, links on those pages,
+ * etc. to a given depth.  Prints output using pageSaver.
+ *
  * Arguments -----
- * seedURL:
- * pageDirectory:
- * maxDepth:
- *
- *
- *
+ * seedURL: URL to begin crawling
+ * pageDirectory: Existing folder to store output
+ * maxDepth: Maximum depth to crawl to
  */
 int crawler(char *seedURL, char *pageDirectory, int maxDepth)
 {
@@ -128,6 +128,9 @@ int crawler(char *seedURL, char *pageDirectory, int maxDepth)
             hashtable_delete(seenURLS, webpage_delete);
             bag_delete(crawlList, webpage_delete);
             return 8;
+        } else {
+            printf("%d %10s: %s\n", webpage_getDepth(currentPage), "Fetched",
+                webpage_getURL(currentPage));
         }
 
         // Make sure seedURL is internal
@@ -142,30 +145,37 @@ int crawler(char *seedURL, char *pageDirectory, int maxDepth)
 
         // pagesave the webpage to pageDirectory with unique ID
         pageSaver(currentPage, pageDirectory, id);
-        printf("    Found: %s\n", webpage_getURL(currentPage));
+        printf("%d %10s: %s\n", webpage_getDepth(currentPage), "Added",
+            webpage_getURL(currentPage));
 
         // If webpage depth < maxDepth find links
         if (webpage_getDepth(currentPage) < maxDepth) {
-            printf("Crawling: %s\n", webpage_getURL(currentPage));
+            printf("%d %10s: %s\n", webpage_getDepth(currentPage), "Scanning",
+                webpage_getURL(currentPage));
             int depth = webpage_getDepth(currentPage);
             int pos = 0;
             char *URL = NULL;
+
             while ((pos = webpage_getNextURL(currentPage, pos, &URL)) > 0) {
                 // Normalize the URL, make sure it's internal to Dartmouth
+                printf("%d %10s: %s\n", depth, "Found", URL);
                 if (NormalizeURL(URL) && IsInternalURL(URL)) {
                     // Try to insert URL in hashtable
                     webpage_t *newPage = webpage_new(URL, depth + 1, NULL);
+
                     if (hashtable_insert(seenURLS, URL, newPage)) {
                         // Add new webpage to the bag of webpages to be crawled
                         bag_insert(crawlList, newPage);
                     } else {
                         // If it was already in hashtable do nothing, clean up
+                        printf("%d %10s: %s\n", depth, "IgnDupl", URL);
                         webpage_delete(newPage);
                     }
+                } else {
+                    printf("%d %10s: %s\n", depth, "IgnExtern", URL);
                 }
                 free(URL);
             }
-            printf("\n");
         }
         id += 1; // Increment ID
     }
