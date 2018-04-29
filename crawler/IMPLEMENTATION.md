@@ -53,4 +53,17 @@ utility function that writes a webpage to a file in the desired format.
 ### Included Modules
 `crawler.c` utilizes data structures that I created, `bag` and `hashtable` (which
 also uses `set`).  In addition, functionality for interfacing with the web is drawn
-from `webpage.[ch]` provided by the cs50 faculty. 
+from `webpage.[ch]` provided by the cs50 faculty.
+
+### Output Format
+`crawler.c` writes the websites it finds to the specified `pageDirectory`.  Each
+website/link it encounters is written to a numbered filename; the numbering scheme
+starts at 1 with the `seedURL` and each website is written to a file whose name is the
+next integer.
+
+The output file contains the URL of the link, the depth at which it was found in relation
+to the `seedURL`, and the HTML of the link.
+
+The output folder also contains an invisible `.crawler` file that contains the
+`seedURL` and `maxDepth`.  The presence of this file can be used to verify that
+an arbitrary folder contains crawler output.
