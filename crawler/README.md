@@ -73,3 +73,4 @@ Crawling http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/index.html with 
 - **7**: Error initializing hashtable data structure
 - **8**: Error connecting to seedURL
 - **9**: seedURL non-internal to the domain `http://old-www.cs.dartmouth.edu/`
+- **10**: Memory allocation error (malloc returned NULL pointer)

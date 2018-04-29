@@ -200,6 +200,10 @@ void pageSaver(webpage_t *page, char *pageDirectory, int ID)
     // Convert ID to a string
     char *strID;
     asprintf(&strID, "%d", ID); // Mallocs space!!
+    if (strID == NULL) {
+        fprintf(stderr, "pageSaver failed to allocate strID\n");
+        exit 10;
+    }
 
     // Allocate memory for filename and write in form of 'pageDirectory/strID'
     char *filename = calloc(strlen(pageDirectory) + strlen(strID) + 2,
