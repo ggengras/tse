@@ -118,6 +118,32 @@ int crawler(char *seedURL, char *pageDirectory, int maxDepth)
     // Take webpage from the bag of webpages
     webpage_t *currentPage = NULL;
 
+    // Add `.crawler` file to pageDirectory, write command line arguments to it
+    char *saveFile = ".crawler";
+    char *filename = calloc(strlen(pageDirectory) + strlen(saveFile) + 2,
+        sizeof(char));
+
+    if (filename == NULL) { // Make sure alloc worked properly
+        fprintf(stderr, "Failed to allocate filename for ./crawler\n");
+        exit(10);
+    }
+
+    // Populate filename
+    strcpy(filename, pageDirectory);
+    strcpy(filename + strlen(pageDirectory), "/");
+    strcpy(filename + strlen(pageDirectory) + 1, saveFile);
+
+    // Null terminate filename string
+    filename[strlen(pageDirectory) + strlen(saveFile) + 1] = '\0';
+
+    FILE *outputFile = fopen(filename, "w");
+    fprintf(outputFile, "%s\n", webpage_getURL(seedPage));
+    fprintf(outputFile, "%d\n", maxDepth);
+
+    // Free memory / close file
+    free(filename);
+    fclose(outputFile);
+
     int id = 1; // store 'ID' of pages we crawl
     while ((currentPage = bag_extract(crawlList)) != NULL) {
         // pagefetch html for the URL AND pause for one second
@@ -200,14 +226,21 @@ void pageSaver(webpage_t *page, char *pageDirectory, int ID)
     // Convert ID to a string
     char *strID;
     asprintf(&strID, "%d", ID); // Mallocs space!!
-    if (strID == NULL) {
+
+    if (strID == NULL) { // Make sure alloc worked properly
         fprintf(stderr, "pageSaver failed to allocate strID\n");
-        exit 10;
+        exit(10);
     }
 
     // Allocate memory for filename and write in form of 'pageDirectory/strID'
     char *filename = calloc(strlen(pageDirectory) + strlen(strID) + 2,
         sizeof(char));
+
+    if (filename == NULL) { // Make sure alloc worked properly
+        fprintf(stderr, "pageSaver failed to allocate filename\n");
+        exit(10);
+    }
+
     strcpy(filename, pageDirectory);
     strcpy(filename + strlen(pageDirectory), "/");
     strcpy(filename + strlen(pageDirectory) + 1, strID);
