@@ -64,7 +64,14 @@ void counters_add(counters_t *ctrs, const int key)
                 ctrs->head = new;
             }
         } else {
-            counters_add(ctrs, key);
+            // Iterate to find the right key
+            for (counter_t *counter = ctrs->head; counter != NULL;
+                counter = counter->next) {
+
+                if (counter->key == key) {
+                    counter->count += 1;
+                }
+            }
         }
     }
 }
