@@ -40,12 +40,12 @@ int main(int argc, char *argv[])
     struct stat dirStatus;
 
     if (stat(argv[2], &dirStatus) == -1) {
-        fprintf(stderr, "Error reading directory\n");
+        fprintf(stderr, "Error: Cannot read directory\n");
         exit(2);
     }
 
     if (!S_ISDIR(dirStatus.st_mode) ) {
-        fprintf(stderr, "Invalid directory\n");
+        fprintf(stderr, "Error: Invalid directory\n");
         exit(3);
     }
 
@@ -56,13 +56,13 @@ int main(int argc, char *argv[])
 
     // Do basic test for integer, **doesn't take floats into consideration**
     if (sscanf(argv[3], "%d", &maxDepth) != 1) {
-        fprintf(stderr, "Max depth must be an integer >= 0\n");
+        fprintf(stderr, "Error: Max depth must be an integer >= 0\n");
         exit(4);
     }
 
     // Make sure max depth is >= 0
     if (maxDepth < 0) {
-        fprintf(stderr, "Max depth must be an integer >= 0\n");
+        fprintf(stderr, "Error: Max depth must be an integer >= 0\n");
         exit(5);
     }
 
@@ -92,7 +92,7 @@ int crawler(char *seedURL, char *pageDirectory, int maxDepth)
     bag_t *crawlList = bag_new();
 
     if (crawlList == NULL) {
-        fprintf(stderr, "Error initializing bag\n");
+        fprintf(stderr, "Error: Failed to initialize bag\n");
         return 6;
     }
 
@@ -110,7 +110,7 @@ int crawler(char *seedURL, char *pageDirectory, int maxDepth)
     hashtable_insert(seenURLS, seedURL, seedPage);
 
     if (seenURLS == NULL) {
-        fprintf(stderr, "Error initializing hashtable\n");
+        fprintf(stderr, "Error: Failed to initialize hashtable\n");
         return 7;
     }
 
@@ -124,7 +124,7 @@ int crawler(char *seedURL, char *pageDirectory, int maxDepth)
         sizeof(char));
 
     if (filename == NULL) { // Make sure alloc worked properly
-        fprintf(stderr, "Failed to allocate filename for ./crawler\n");
+        fprintf(stderr, "Error: Failed to allocate filename for ./crawler\n");
         exit(10);
     }
 
@@ -149,7 +149,7 @@ int crawler(char *seedURL, char *pageDirectory, int maxDepth)
         // pagefetch html for the URL AND pause for one second
         // Throw error if we can't connect to seedURL
         if (webpage_fetch(currentPage) == false && currentPage == seedPage) {
-            fprintf(stderr, "Error connecting to seedURL\n");
+            fprintf(stderr, "Error: Cannot connect to seedURL\n");
             // Free memory
             hashtable_delete(seenURLS, webpage_delete);
             bag_delete(crawlList, webpage_delete);
@@ -162,7 +162,7 @@ int crawler(char *seedURL, char *pageDirectory, int maxDepth)
         // Make sure seedURL is internal
         if (!IsInternalURL(webpage_getURL(currentPage)) &&
             currentPage == seedPage) {
-                fprintf(stderr, "seedURL non-internal\n");
+                fprintf(stderr, "Error: seedURL non-internal\n");
                 // Free memory
                 hashtable_delete(seenURLS, webpage_delete);
                 bag_delete(crawlList, webpage_delete);
@@ -228,7 +228,7 @@ void pageSaver(webpage_t *page, char *pageDirectory, int ID)
     asprintf(&strID, "%d", ID); // Mallocs space!!
 
     if (strID == NULL) { // Make sure alloc worked properly
-        fprintf(stderr, "pageSaver failed to allocate strID\n");
+        fprintf(stderr, "Error: pageSaver failed to allocate strID\n");
         exit(10);
     }
 
@@ -237,7 +237,7 @@ void pageSaver(webpage_t *page, char *pageDirectory, int ID)
         sizeof(char));
 
     if (filename == NULL) { // Make sure alloc worked properly
-        fprintf(stderr, "pageSaver failed to allocate filename\n");
+        fprintf(stderr, "Error: pageSaver failed to allocate filename\n");
         exit(10);
     }
 
