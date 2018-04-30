@@ -21,5 +21,5 @@ clean:
 	rm -f *~
 	rm -f TAGS
 	$(MAKE) -C libcs50 clean
-	#$(MAKE) -C common clean
+	$(MAKE) -C common clean
 	$(MAKE) -C crawler clean
