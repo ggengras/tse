@@ -2,6 +2,8 @@
 *  Graeme Gengras, April 2018
 *
 * pagedir.h -
+*
+* See pagedir.h for full documentation
 */
 
 #ifndef __PAGEDIR_H

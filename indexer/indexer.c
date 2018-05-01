@@ -4,40 +4,50 @@
 * indexer.c -
 */
 
+#include <stdio.h>
 #include "index.h"
 #include "pagedir.h"
+#include "glib.h"
 
 // * * * * * * * * Function Declarations * * * * * * * * //
 //          See implementation section for details       //
 
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
     // Parse the command line, validate parameters
     // Check for # of args
     if (argc != 3) {
-        fprintf(stderr, "./indexer pageDirectory indexFilename\n");
+        fprintf(stderr, "Usage: ./indexer pageDirectory indexFilename\n");
         exit(1);
     }
 
-
-
-
-
     // Check for presence of `.crawler` file in `pageDirectory`
-    char *dirTest = ".crawler";
-    char *filename = calloc(strlen(argv[1]) + strlen(dirTest) + 2,
-        sizeof(char));
+    char *pageDirectory = argv[1];
+    char *dirTest = "/.crawler";
+    char *filename = strCat(pageDirectory, dirTest); // strCat allocs memory
 
     if (filename == NULL) { // Make sure alloc worked properly
-        fprintf(stderr, "Failed to allocate filename for ./crawler\n");
+        fprintf(stderr, "Error: Failed to allocate filename for ./crawler\n");
         exit(10);
     }
 
-    // Populate filename
-    strcpy(filename, pageDirectory);
-    strcpy(filename + strlen(pageDirectory), "/");
-    strcpy(filename + strlen(pageDirectory) + 1, dirTest);
+    FILE *fp;
+    if ( (fp = fopen(filename, "r")) == NULL ) {
+        fprintf(stderr,
+            "Error: Specified directory does not contain valid crawler output\n");
+        exit(2);
+    }
+    // Clean up
+    free(filename); // From strCat
+    fclose(fp);
 
-    // Null terminate filename string
-    filename[strlen(pageDirectory) + strlen(dirTest) + 1] = '\0';
+    // Create `indexFilename`, overwrite if it exists
+    if ( (fp = fopen(argv[2], "w")) == NULL ) {
+        fprintf(stderr,
+            "Error: Cannot open %s\n", argv[2]);
+        exit(3);
+    }
+
+
 
 }
