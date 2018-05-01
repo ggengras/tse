@@ -9,7 +9,7 @@ MAKE = make
 ############## default: make all libs and programs ##########
 all:
 	$(MAKE) -C libcs50
-	#$(MAKE) -C common
+	$(MAKE) -C common
 	$(MAKE) -C crawler
 
 ############### TAGS for emacs users ##########
