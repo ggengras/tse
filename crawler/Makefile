@@ -13,7 +13,7 @@ all: $(PROG)
 $(PROG): $(PROG).c
 	$(CC) -o $@ $< $(CFLAGS)
 
-.PHONY: test clean valgrind
+.PHONY: test clean
 
 test: $(PROG)
 	echo Running Integration Tests

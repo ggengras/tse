@@ -8,22 +8,22 @@ CC=gcc
 CFLAGS=-Wall -pedantic -std=c11 -ggdb -I ../libcs50 -L ../libcs50 -lcs50 \
 	-I ../common -L ../common -lcommon
 
-all: indexer indexertest
+all: indexer indextest
 
 indexer: indexer.c
 	$(CC) -o $@ $< $(CFLAGS)
 
-indexertest: indexertest.c
+indextest: indextest.c
 	$(CC) -o $@ $< $(CFLAGS)
 
 .PHONY: test clean
 
-test: indexertext
+test: indextext
 	./indexertest.sh
-	./indexertest
+	./indextest
 
 clean:
 	rm -f *~ *.o
 	rm -rf *.dSYM
 	rm -f indexer
-	rm -f indexertest
+	rm -f indextest

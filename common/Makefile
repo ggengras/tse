@@ -4,7 +4,7 @@
 #   Builds and compiles all functions into a library.
 
 # object files, and the target library
-OBJS = word.o pagedir.o index.o glib.o
+OBJS = word.o pagedir.o index.o file.o glib.o
 LIB = libcommon.a
 CFLAGS = -Wall -pedantic -std=c11 -ggdb -I ../libcs50
 CC = gcc
@@ -17,7 +17,8 @@ $(LIB): $(OBJS)
 word.o: word.h
 pagedir.o: pagedir.h
 index.o: index.h
-glib: glib.h
+file.o: file.h
+glib.o: glib.h
 
 .PHONY: clean
 
