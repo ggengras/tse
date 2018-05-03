@@ -17,10 +17,19 @@ typedef struct index index_t;
 
 // * * * * * * * * Local Functions * * * * //
 
-/*
- * indexDelete needs a litte help
+/* Function to pass to hashtable_delete that deletes counter structs
+ *
+ * item is a pointer to a counter
  */
 void deleteHelper(void *item);
+
+/* Function to pass to hashtable_iterate that prints
+ * the index file
+ *
+ * arg is the file pointer to print to, key is the word and
+ * item is a pointer to a counter
+ */
+void saveHelperHashtable(void *arg, const char *key, void *item);
 
 // * * * * * * * * Function Declarations * * * * //
 
@@ -62,9 +71,8 @@ void indexDelete(index_t *index);
  * Returns a pointer to dynamically allocated memory
  * containing the index
  *
- * If unsuccessful will return NULL pointer
  */
-index_t *loadIndex(FILE *fp);
+void loadIndex(index_t *index, FILE *fp);
 
 /* Takes an `index` data structure and writes
  * it to a file

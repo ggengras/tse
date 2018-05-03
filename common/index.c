@@ -6,6 +6,7 @@
 
 #include <stdlib.h>
 #include "index.h"
+#include "file.h"
 #include "hashtable.h"
 #include "counters.h"
 
@@ -20,6 +21,23 @@ typedef struct index {
 void deleteHelper(void *item) {
     counters_t *ctr = item;
     counters_delete(ctr);
+}
+
+void saveHelperCounters(void *arg, const int key, int count) {
+    FILE *fp = arg; // Cast void* to FILE*
+
+    // Print docID, count pairs
+    fprintf(fp, "%d %d ", key, count);
+
+}
+
+void saveHelperHashtable(void *arg, const char *word, void *counter) {
+    FILE *fp = arg; // Cast void* to FILE*
+    counters_t *counterCast = counter; // Cast void* to counters_t*
+
+    fprintf(fp, "%s ", word);
+    counters_iterate(counterCast, fp, (*saveHelperCounters));
+    fprintf(fp, "\n"); // Newline for next word
 }
 
 // * * * * * * * * Function Implementation * * * * //
@@ -80,20 +98,19 @@ void indexDelete(index_t *index)
  * Returns a pointer to dynamically allocated memory
  * containing the index
  *
- * If unsuccessful will return NULL pointer
  */
-index_t *loadIndex(FILE *fp)
+void loadIndex(index_t *index, FILE *fp)
 {
-    FILE *fp;
-    if ( (fp = fopen(filename, "r")) == NULL ) {
-        char c = '\0' // Char to store 
-
-        while ((c = fgetc()))
-
-
-
-    } else {
-        return NULL;
+    if (fp != NULL) {
+        char *word = NULL;
+        int docID = 0;
+        int count = 0;
+        for (int i = 0; i < lines_in_file(fp); i++) {
+            word = readwordp(fp); // mallocs
+            while (fscanf(fp, "%d %d ", &docID, &count)) {
+                indexSet(index, word, docID, count);
+            }
+        }
     }
 }
 
@@ -106,5 +123,9 @@ index_t *loadIndex(FILE *fp)
  */
 bool saveIndex(index_t *index, FILE *fp)
 {
-
+    if (fp != NULL) {
+        hashtable_iterate(index->ht, fp, (*saveHelperHashtable));
+    } else {
+        return false;
+    }
 }
