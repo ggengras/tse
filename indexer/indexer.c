@@ -24,29 +24,58 @@ int main(int argc, char *argv[])
     // Check for presence of `.crawler` file in `pageDirectory`
     char *pageDirectory = argv[1];
     char *dirTest = "/.crawler";
-    char *filename = strCat(pageDirectory, dirTest); // strCat allocs memory
+    char *filename = strCat(pageDirectory, dirTest); // Mallocs space!
 
     if (filename == NULL) { // Make sure alloc worked properly
         fprintf(stderr, "Error: Failed to allocate filename for ./crawler\n");
         exit(10);
     }
 
-    FILE *fp;
-    if ( (fp = fopen(filename, "r")) == NULL ) {
+    FILE *crawlerCheck;
+    if ( (crawlerCheck = fopen(filename, "r")) == NULL ) {
         fprintf(stderr,
             "Error: Specified directory does not contain valid crawler output\n");
         exit(2);
     }
+
     // Clean up
     free(filename); // From strCat
-    fclose(fp);
+    fclose(crawlerCheck);
 
     // Create `indexFilename`, overwrite if it exists
-    if ( (fp = fopen(argv[2], "w")) == NULL ) {
+    FILE *outputFile;
+    if ( (outputFile = fopen(argv[2], "w")) == NULL ) {
         fprintf(stderr,
             "Error: Cannot open %s\n", argv[2]);
         exit(3);
     }
+
+    // Read files from crawler output into the index
+    index_t *index = indexNew(500); // Number of hashtable slots is hardcoded atm
+
+    // Create initial filename to open
+    int fileNum = 1;
+    char *fileNumStr;
+    asprintf(&fileNumStr, "/%d", fileNum); // Mallocs space!
+    char *crawlerFilename = strCat(pageDirectory, fileNumStr); // First file
+    FILE *inputFile = fopen(crawlerFilename, "r");
+    printf("%s", crawlerFilename);
+
+
+    // Iterate over files in pageDirectory
+    while (inputFile != NULL) {
+        printf("%s", readlinep(inputFile));
+        // Not sure if this is necessary but why not
+        free(fileNumStr);
+        free(crawlerFilename);
+
+        // Go to next file
+        fileNum += 1;
+        asprintf(&fileNumStr, "/%d", fileNum);
+        crawlerFilename = strCat(pageDirectory, fileNumStr);
+        inputFile = fopen(crawlerFilename, "r");
+    }
+
 
 
 
