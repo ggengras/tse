@@ -8,6 +8,7 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <assert.h>
 
 char *strCat(char *str1, char *str2) {
@@ -16,12 +17,14 @@ char *strCat(char *str1, char *str2) {
     // Make sure calloc worked
     assert(newString != NULL);
 
-    // Populate newString
+    //// Populate newString
     strcpy(newString, str1);
-    strcpy(newString + strlen(str1), str2);
+    strcat(newString, str2);
+    //strcpy(newString + strlen(str1), str2);
 
-    // Null terminate newString
-    newString[strlen(str1) + strlen(str2) + 1] = '\0';
+    //// Null terminate newString
+    //newString[strlen(str1) + strlen(str2) + 1] = '\0';
+    printf("%s\n", newString);
 
     return newString;
 }
