@@ -34,7 +34,6 @@ void saveHelperCounters(void *arg, const int key, int count) {
 void saveHelperHashtable(void *arg, const char *word, void *counter) {
     FILE *fp = arg; // Cast void* to FILE*
     counters_t *counterCast = counter; // Cast void* to counters_t*
-
     fprintf(fp, "%s ", word);
     counters_iterate(counterCast, fp, (*saveHelperCounters));
     fprintf(fp, "\n"); // Newline for next word
@@ -124,7 +123,9 @@ void loadIndex(index_t *index, FILE *fp)
 bool saveIndex(index_t *index, FILE *fp)
 {
     if (fp != NULL) {
+        printf("here\n");
         hashtable_iterate(index->ht, fp, (*saveHelperHashtable));
+        return true;
     } else {
         return false;
     }
