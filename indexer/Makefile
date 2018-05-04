@@ -10,11 +10,17 @@ CFLAGS=-Wall -pedantic -std=c11 -ggdb -I ../common -L ../common -lcommon \
 
 all: indexer indextest
 
-indexer: indexer.c
+indexer: indexer.c libcs50.a libcommon.a
 	$(CC) -o $@ $< $(CFLAGS)
 
-indextest: indextest.c
+indextest: indextest.c libcs50.a libcommon.a
 	$(CC) -o $@ $< $(CFLAGS)
+
+libcs50.a:
+	cd ../libcs50; make
+
+libcommon.a:
+	cd ../common; make
 
 .PHONY: test clean
 

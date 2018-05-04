@@ -80,7 +80,6 @@ int main(int argc, char *argv[])
         inputFile = fopen(crawlerFilename, "r");
     }
 
-
     // Create `indexFilename`, overwrite if it exists
     FILE *outputFile;
     if ( (outputFile = fopen(argv[2], "w")) == NULL ) {
@@ -89,6 +88,7 @@ int main(int argc, char *argv[])
         exit(3);
     }
 
+    indexDelete(index);
     // Write to file
     saveIndex(index, outputFile);
 }
