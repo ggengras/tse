@@ -9,6 +9,7 @@
 #endif
 
 #include <stdio.h>
+#include "file.h"
 #include "index.h"
 #include "pagedir.h"
 #include "glib.h"
@@ -46,14 +47,6 @@ int main(int argc, char *argv[])
     free(filename); // From strCat
     fclose(crawlerCheck);
 
-    // Create `indexFilename`, overwrite if it exists
-    FILE *outputFile;
-    if ( (outputFile = fopen(argv[2], "w")) == NULL ) {
-        fprintf(stderr,
-            "Error: Cannot open %s\n", argv[2]);
-        exit(3);
-    }
-
     // Read files from crawler output into the index
     index_t *index = indexNew(500); // Number of hashtable slots is hardcoded atm
 
@@ -63,13 +56,19 @@ int main(int argc, char *argv[])
     asprintf(&fileNumStr, "/%d", fileNum); // Mallocs space!
     char *crawlerFilename = strCat(pageDirectory, fileNumStr); // First file
     FILE *inputFile = fopen(crawlerFilename, "r");
-    printf("%s", crawlerFilename);
-
 
     // Iterate over files in pageDirectory
     while (inputFile != NULL) {
-        printf("%s", readlinep(inputFile));
+        // Skip the first two lines of the file (find a better way to do this)
+        char *input = readlinep(inputFile);
+        input = readlinep(inputFile);
+
+        while ( (input = readwordp(inputFile)) != NULL) {
+            indexAdd(index, input, fileNum); // Add word to the index
+        }
+
         // Not sure if this is necessary but why not
+        free(input);
         free(fileNumStr);
         free(crawlerFilename);
 
@@ -79,8 +78,17 @@ int main(int argc, char *argv[])
         crawlerFilename = strCat(pageDirectory, fileNumStr);
         inputFile = fopen(crawlerFilename, "r");
     }
+        fclose(inputFile);
 
 
+    // Create `indexFilename`, overwrite if it exists
+    FILE *outputFile;
+    if ( (outputFile = fopen(argv[2], "w")) == NULL ) {
+        fprintf(stderr,
+            "Error: Cannot open %s\n", argv[2]);
+        exit(3);
+    }
 
-
+    // Write to file
+    saveIndex(index, outputFile);
 }
