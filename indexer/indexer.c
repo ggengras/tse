@@ -78,7 +78,7 @@ int main(int argc, char *argv[])
         crawlerFilename = strCat(pageDirectory, fileNumStr);
         inputFile = fopen(crawlerFilename, "r");
     }
-        fclose(inputFile);
+    fclose(inputFile);
 
 
     // Create `indexFilename`, overwrite if it exists
