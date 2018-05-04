@@ -24,7 +24,7 @@ int main(int argc, char *argv[]) {
 
     // Create & load index
     index_t *index = indexNew(500);
-    loadIndex(index, loadFile);
+    indexLoad(index, loadFile);
     fclose(loadFile);
 
     // Create `newIndexFilename`, overwrite if it exists
@@ -36,7 +36,7 @@ int main(int argc, char *argv[]) {
     }
 
     // Save index and clean up
-    saveIndex(index, saveFile);
+    indexSave(index, saveFile);
     indexDelete(index);
     fclose(saveFile);
 }

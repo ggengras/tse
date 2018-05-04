@@ -20,10 +20,7 @@ char *strCat(char *str1, char *str2) {
     //// Populate newString
     strcpy(newString, str1);
     strcat(newString, str2);
-    //strcpy(newString + strlen(str1), str2);
 
-    //// Null terminate newString
-    //newString[strlen(str1) + strlen(str2) + 1] = '\0';
     printf("%s\n", newString);
 
     return newString;

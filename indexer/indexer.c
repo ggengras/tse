@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
     fclose(crawlerCheck);
 
     // Read files from crawler output into the index
-    index_t *index = indexNew(500); // Number of hashtable slots is hardcoded atm
+    index_t *index = indexNew(5); // Number of hashtable slots is hardcoded atm
 
     // Create initial filename to open
     int fileNum = 1;
@@ -88,7 +88,7 @@ int main(int argc, char *argv[])
         exit(3);
     }
 
-    indexDelete(index);
     // Write to file
-    saveIndex(index, outputFile);
+    indexSave(index, outputFile);
+    indexDelete(index);
 }

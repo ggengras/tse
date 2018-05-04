@@ -72,7 +72,7 @@ void indexDelete(index_t *index);
  * containing the index
  *
  */
-void loadIndex(index_t *index, FILE *fp);
+void indexLoad(index_t *index, FILE *fp);
 
 /* Takes an `index` data structure and writes
  * it to a file
@@ -81,6 +81,6 @@ void loadIndex(index_t *index, FILE *fp);
  *
  * Returns `true` if successful, else `false`
  */
-bool saveIndex(index_t *index, FILE *fp);
+bool indexSave(index_t *index, FILE *fp);
 
 #endif //__INDEX_H

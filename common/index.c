@@ -6,6 +6,7 @@
 
 #include <stdlib.h>
 #include "index.h"
+#include "word.h"
 #include "file.h"
 #include "hashtable.h"
 #include "counters.h"
@@ -25,16 +26,14 @@ void deleteHelper(void *item) {
 
 void saveHelperCounters(void *arg, const int key, int count) {
     FILE *fp = arg; // Cast void* to FILE*
-
     // Print docID, count pairs
     fprintf(fp, "%d %d ", key, count);
-
 }
 
 void saveHelperHashtable(void *arg, const char *word, void *counter) {
     FILE *fp = arg; // Cast void* to FILE*
     counters_t *counterCast = counter; // Cast void* to counters_t*
-    fprintf(fp, "%s ", word);
+    fprintf(fp, "%s ", NormalizeWord(word));
     counters_iterate(counterCast, fp, (*saveHelperCounters));
     fprintf(fp, "\n"); // Newline for next word
 }
@@ -44,8 +43,9 @@ void saveHelperHashtable(void *arg, const char *word, void *counter) {
 index_t *indexNew(const int num_slots)
 {
     index_t *index = malloc(sizeof(index_t)); // Malloc
-    index-> ht = hashtable_new(num_slots); // Malloc
+    index->ht = hashtable_new(num_slots); // Malloc
     index->num_slots = num_slots;
+    return index;
 }
 
 void indexAdd(index_t *index, const char *word, const int docID)
@@ -87,7 +87,7 @@ void indexSet(index_t *index, const char *word, const int docID, int count)
 void indexDelete(index_t *index)
 {
     hashtable_delete(index->ht, (*deleteHelper));
-    free(index->ht);
+    //free(index->ht);
 }
 
 
@@ -98,7 +98,7 @@ void indexDelete(index_t *index)
  * containing the index
  *
  */
-void loadIndex(index_t *index, FILE *fp)
+void indexLoad(index_t *index, FILE *fp)
 {
     if (fp != NULL) {
         char *word = NULL;
@@ -107,7 +107,7 @@ void loadIndex(index_t *index, FILE *fp)
         for (int i = 0; i < lines_in_file(fp); i++) {
             word = readwordp(fp); // mallocs
             while (fscanf(fp, "%d %d ", &docID, &count)) {
-                indexSet(index, word, docID, count);
+                indexSet(index, NormalizeWord(word), docID, count);
             }
         }
     }
@@ -120,10 +120,9 @@ void loadIndex(index_t *index, FILE *fp)
  *
  * Returns `true` if successful, else `false`
  */
-bool saveIndex(index_t *index, FILE *fp)
+bool indexSave(index_t *index, FILE *fp)
 {
     if (fp != NULL) {
-        printf("here\n");
         hashtable_iterate(index->ht, fp, (*saveHelperHashtable));
         return true;
     } else {

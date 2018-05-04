@@ -20,8 +20,9 @@ CC = gcc
 MAKE = make
 
 # Build the library by archiving object files
-$(LIB):
-	cp $(LIB)-`uname` $(LIB)
+$(LIB): $(OBJS)
+	ar cr $(LIB) $(OBJS)
+	#cp $(LIB)-`uname` $(LIB)
 
 # Dependencies: object files depend on header files
 bag.o: bag.h

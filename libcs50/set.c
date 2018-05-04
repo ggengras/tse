@@ -24,7 +24,7 @@ typedef struct set {
 } set_t;
 
 /**************** local functions **************/
-static setpair_t *setpair_new(char *key, void *item)
+setpair_t *setpair_new(char *key, void *item)
 {
     setpair_t *pair = malloc(sizeof(setpair_t));
 
