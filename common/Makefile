@@ -6,7 +6,7 @@
 # object files, and the target library
 OBJS = word.o pagedir.o index.o file.o glib.o
 LIB = libcommon.a
-CFLAGS = -Wall -pedantic -std=c11 -ggdb -I ../libcs50
+CFLAGS = -Wall -pedantic -std=c11 -ggdb -I ../libcs50 -L ../libcs50
 CC = gcc
 
 # Build the library by archiving object files
@@ -16,7 +16,7 @@ $(LIB): $(OBJS)
 # Dependencies: object files depend on header files
 word.o: word.h
 pagedir.o: pagedir.h
-index.o: index.h hashtable.h counters.h
+index.o: index.h
 file.o: file.h
 glib.o: glib.h
 
