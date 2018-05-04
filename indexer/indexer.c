@@ -71,6 +71,7 @@ int main(int argc, char *argv[])
         free(input);
         free(fileNumStr);
         free(crawlerFilename);
+        fclose(inputFile);
 
         // Go to next file
         fileNum += 1;
@@ -78,7 +79,6 @@ int main(int argc, char *argv[])
         crawlerFilename = strCat(pageDirectory, fileNumStr);
         inputFile = fopen(crawlerFilename, "r");
     }
-    fclose(inputFile);
 
 
     // Create `indexFilename`, overwrite if it exists
