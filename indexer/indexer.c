@@ -4,6 +4,10 @@
 * indexer.c -
 */
 
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE 1
+#endif
+
 #include <stdio.h>
 #include "index.h"
 #include "pagedir.h"
