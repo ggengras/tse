@@ -23,7 +23,7 @@ int main(int argc, char *argv[]) {
     }
 
     // Create & load index
-    index_t *index = indexNew(500);
+    index_t *index = indexNew(500); // Make this dynamic depending on n. words
     indexLoad(index, loadFile);
     fclose(loadFile);
 

@@ -21,7 +21,5 @@ char *strCat(char *str1, char *str2) {
     strcpy(newString, str1);
     strcat(newString, str2);
 
-    printf("%s\n", newString);
-
     return newString;
 }

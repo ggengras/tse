@@ -87,39 +87,25 @@ void indexSet(index_t *index, const char *word, const int docID, int count)
 void indexDelete(index_t *index)
 {
     hashtable_delete(index->ht, (*deleteHelper));
-    //free(index->ht);
+    //free(index->ht); don't need this?
 }
 
-
-/* Takes an index file (written by saveIndex, or of the same
- * format) and loads it into an `index` data structure
- *
- * Returns a pointer to dynamically allocated memory
- * containing the index
- *
- */
 void indexLoad(index_t *index, FILE *fp)
 {
     if (fp != NULL) {
         char *word = NULL;
         int docID = 0;
         int count = 0;
-        for (int i = 0; i < lines_in_file(fp); i++) {
-            word = readwordp(fp); // mallocs
-            while (fscanf(fp, "%d %d ", &docID, &count)) {
+        int scan;
+        while ( (word = readwordp(fp)) != NULL) {
+            while ((scan = fscanf(fp, "%d %d ", &docID, &count)) > 0) {
                 indexSet(index, NormalizeWord(word), docID, count);
             }
+            free(word);
         }
     }
 }
 
-/* Takes an `index` data structure and writes
- * it to a file
- *
- * Pointers must be non-NULL
- *
- * Returns `true` if successful, else `false`
- */
 bool indexSave(index_t *index, FILE *fp)
 {
     if (fp != NULL) {
