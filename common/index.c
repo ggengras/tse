@@ -87,7 +87,7 @@ void indexSet(index_t *index, const char *word, const int docID, int count)
 void indexDelete(index_t *index)
 {
     hashtable_delete(index->ht, (*deleteHelper));
-    //free(index->ht); don't need this?
+    free(index);
 }
 
 void indexLoad(index_t *index, FILE *fp)
