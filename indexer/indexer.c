@@ -1,7 +1,9 @@
 /* 'Tiny' Search Engine
 *  Graeme Gengras, April 2018
 *
-* indexer.c -
+* indexer.c - Takes a directory of output from crawler.c and creates an
+* index file that conatins information about how often different words occur
+* on each page.
 */
 
 #ifndef _GNU_SOURCE
@@ -9,6 +11,7 @@
 #endif
 
 #include <stdio.h>
+#include <assert.h>
 #include "file.h"
 #include "index.h"
 #include "pagedir.h"
@@ -31,13 +34,7 @@ int main(int argc, char *argv[])
     char *dirTest = "/.crawler";
     char *filename = strCat(pageDirectory, dirTest); // Mallocs space!
 
-    if (filename == NULL) { // Make sure alloc worked properly
-        fprintf(stderr, "Error: Failed to allocate filename for ./crawler\n");
-
-        // Clean up
-        free(filename); // From strCat
-        exit(10);
-    }
+    assert(filename != NULL);
 
     FILE *crawlerCheck;
     if ( (crawlerCheck = fopen(filename, "r")) == NULL ) {
@@ -108,4 +105,5 @@ int main(int argc, char *argv[])
     indexSave(index, outputFile);
     indexDelete(index);
     fclose(outputFile);
+    return 0;
 }

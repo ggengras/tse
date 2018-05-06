@@ -1,7 +1,9 @@
 /* 'Tiny' Search Engine
 *  Graeme Gengras, April 2018
 *
-* indexertest.c -
+* indexertest.c - Program for testing indexer.c.  Takes an index file created by
+* indexer.c and copies it into another index file.  The two should be identical
+* if nothing bad happened.
 */
 
 #include "index.h"
@@ -19,7 +21,7 @@ int main(int argc, char *argv[]) {
     if ( (loadFile = fopen(argv[1], "r")) == NULL ) {
         fprintf(stderr,
             "Error: Cannot open %s\n", argv[1]);
-        exit(2);
+        exit(3);
     }
 
     // Create & load index
@@ -39,4 +41,5 @@ int main(int argc, char *argv[]) {
     indexSave(index, saveFile);
     indexDelete(index);
     fclose(saveFile);
+    return 0;
 }

@@ -32,3 +32,4 @@ clean:
 	rm -rf *.dSYM
 	rm -f indexer
 	rm -f indextest
+	rm -rf indexer_test_output/
