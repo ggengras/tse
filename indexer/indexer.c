@@ -78,8 +78,6 @@ int main(int argc, char *argv[])
             free(input);
         }
 
-        // Not sure if this is necessary but why not
-        free(input);
         free(fileNumStr);
         free(crawlerFilename);
         fclose(inputFile);
@@ -100,10 +98,14 @@ int main(int argc, char *argv[])
     if ( (outputFile = fopen(argv[2], "w")) == NULL ) {
         fprintf(stderr,
             "Error: Cannot open %s\n", argv[2]);
+        // Clean up
+        indexDelete(index);
+        fclose(outputFile);
         exit(3);
     }
 
     // Write to file
     indexSave(index, outputFile);
     indexDelete(index);
+    fclose(outputFile);
 }
