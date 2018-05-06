@@ -33,6 +33,9 @@ int main(int argc, char *argv[])
 
     if (filename == NULL) { // Make sure alloc worked properly
         fprintf(stderr, "Error: Failed to allocate filename for ./crawler\n");
+
+        // Clean up
+        free(filename); // From strCat
         exit(10);
     }
 
@@ -40,6 +43,10 @@ int main(int argc, char *argv[])
     if ( (crawlerCheck = fopen(filename, "r")) == NULL ) {
         fprintf(stderr,
             "Error: Specified directory does not contain valid crawler output\n");
+
+        // Clean up
+        free(filename);
+        fclose(crawlerCheck);
         exit(2);
     }
 
