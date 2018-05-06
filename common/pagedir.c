@@ -5,21 +5,37 @@
 */
 
 #include "pagedir.h"
+#include "assert.h"
+#include "string.h"
 
 // * * * * * * * * Function Declarations * * * * //
 
-webpage_t *loadPage(FILE *fp) {
-
-}
-
-hashtable_t *loadPageDir(DIR *dp) {
-
-}
-
 bool savePage(webpage_t *page, char *pageDirectory, int ID) {
+    // Convert ID to a string
+    char *strID;
+    asprintf(&strID, "%d", ID); // Mallocs space!!
+    assert(strID != NULL);
 
-}
+    // Allocate memory for filename and write in form of 'pageDirectory/strID'
+    char *filename = calloc(strlen(pageDirectory) + strlen(strID) + 2,
+        sizeof(char));
+    assert(filename != NULL);
 
-bool savePageDir(hashtable_t *pages, DIR *dp) {
+    strcpy(filename, pageDirectory);
+    strcpy(filename + strlen(pageDirectory), "/");
+    strcpy(filename + strlen(pageDirectory) + 1, strID);
 
+    // Null terminate filename string
+    filename[strlen(pageDirectory) + strlen(strID) + 1] = '\0';
+
+    // Open file for writing
+    FILE *outputFile = fopen(filename, "w");
+    fprintf(outputFile, "%s\n", webpage_getURL(page));
+    fprintf(outputFile, "%d\n", webpage_getDepth(page));
+    fprintf(outputFile, "%s", webpage_getHTML(page));
+
+    free(strID);
+    free(filename);
+    fclose(outputFile);
+    return true;
 }

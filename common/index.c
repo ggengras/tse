@@ -1,7 +1,11 @@
 /* 'Tiny' Search Engine
 *  Graeme Gengras, April 2018
 *
-* index.c -
+* index.c - Implements an inverted index that maps words to (docID, count)
+* pairs.  Includes basic functions for incrementing and setting counts as
+* well as saving the indexes to and loading them from files.
+*
+* See index.h for more information about functions.
 */
 
 #include <stdlib.h>
@@ -33,7 +37,7 @@ void saveHelperCounters(void *arg, const int key, int count) {
 void saveHelperHashtable(void *arg, const char *word, void *counter) {
     FILE *fp = arg; // Cast void* to FILE*
     counters_t *counterCast = counter; // Cast void* to counters_t*
-    fprintf(fp, "%s ", NormalizeWord(word));
+    fprintf(fp, "%s ", word);
     counters_iterate(counterCast, fp, (*saveHelperCounters));
     fprintf(fp, "\n"); // Newline for next word
 }

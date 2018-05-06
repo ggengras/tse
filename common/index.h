@@ -1,7 +1,7 @@
 /* 'Tiny' Search Engine
 *  Graeme Gengras, April 2018
 *
-* indexer.h - Implements an inverted index that maps words to (docID, count)
+* index.h - Implements an inverted index that maps words to (docID, count)
 * pairs.  Includes basic functions for incrementing and setting counts as
 * well as saving the indexes to and loading them from files.
 */

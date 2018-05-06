@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# testcrawler.sh
+# testcrawler_int.sh
 # Graeme Gengras April, 2018
 #
 # testcrawler.sh is a shell script for performing integration

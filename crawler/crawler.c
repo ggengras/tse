@@ -16,6 +16,7 @@
 #include <unistd.h>
 #include <sys/stat.h>
 #include <string.h>
+#include "pagedir.h"
 #include "webpage.h"
 #include "bag.h"
 #include "hashtable.h"
@@ -24,7 +25,6 @@
 //          See implementation section for details       //
 
 int crawler(char *seedURL, char *pageDirectory, int maxDepth);
-void pageSaver(webpage_t *page, char *pageDirectory, int ID);
 
 int main(int argc, char *argv[])
 {
@@ -76,7 +76,7 @@ int main(int argc, char *argv[])
 /* *
  * crawler -----
  * Given a seedURL, finds all links at that URL, links on those pages,
- * etc. to a given depth.  Prints output using pageSaver.
+ * etc. to a given depth.  Prints output using savePage from pagedir.c.
  *
  * Arguments -----
  * seedURL: URL to begin crawling
@@ -170,7 +170,7 @@ int crawler(char *seedURL, char *pageDirectory, int maxDepth)
         }
 
         // pagesave the webpage to pageDirectory with unique ID
-        pageSaver(currentPage, pageDirectory, id);
+        savePage(currentPage, pageDirectory, id);
         printf("%d %10s: %s\n", webpage_getDepth(currentPage), "Added",
             webpage_getURL(currentPage));
 
@@ -210,51 +210,4 @@ int crawler(char *seedURL, char *pageDirectory, int maxDepth)
     hashtable_delete(seenURLS, webpage_delete);
     bag_delete(crawlList, webpage_delete);
     return 0;
-}
-
-/* *
- * pageSaver -----
- * Takes a webpage and saves it to a file called 'ID' in 'pageDirectory'
- *
- * Arguments -----
- * page: webpage with non-NULL URL, depth, HTML
- * pageDirectory: existing directory to save files
- * id: unique id # of page
- */
-void pageSaver(webpage_t *page, char *pageDirectory, int ID)
-{
-    // Convert ID to a string
-    char *strID;
-    asprintf(&strID, "%d", ID); // Mallocs space!!
-
-    if (strID == NULL) { // Make sure alloc worked properly
-        fprintf(stderr, "Error: pageSaver failed to allocate strID\n");
-        exit(10);
-    }
-
-    // Allocate memory for filename and write in form of 'pageDirectory/strID'
-    char *filename = calloc(strlen(pageDirectory) + strlen(strID) + 2,
-        sizeof(char));
-
-    if (filename == NULL) { // Make sure alloc worked properly
-        fprintf(stderr, "Error: pageSaver failed to allocate filename\n");
-        exit(10);
-    }
-
-    strcpy(filename, pageDirectory);
-    strcpy(filename + strlen(pageDirectory), "/");
-    strcpy(filename + strlen(pageDirectory) + 1, strID);
-
-    // Null terminate filename string
-    filename[strlen(pageDirectory) + strlen(strID) + 1] = '\0';
-
-    // Open file for writing
-    FILE *outputFile = fopen(filename, "w");
-    fprintf(outputFile, "%s\n", webpage_getURL(page));
-    fprintf(outputFile, "%d\n", webpage_getDepth(page));
-    fprintf(outputFile, "%s", webpage_getHTML(page));
-
-    free(strID);
-    free(filename);
-    fclose(outputFile);
 }
