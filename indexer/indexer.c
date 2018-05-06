@@ -65,9 +65,10 @@ int main(int argc, char *argv[])
     FILE *inputFile = fopen(crawlerFilename, "r");
 
     // Iterate over files in pageDirectory
+    char *input;
     while (inputFile != NULL) {
         // Skip the first two lines of the file (find a better way to do this)
-        char *input = readlinep(inputFile);
+        input = readlinep(inputFile);
         free(input);
         input = readlinep(inputFile);
         free(input);
@@ -90,7 +91,6 @@ int main(int argc, char *argv[])
     }
     // Need this one more time
     // Don't need to close FP bc it should be NULL at this point
-    free(input);
     free(fileNumStr);
     free(crawlerFilename);
 
