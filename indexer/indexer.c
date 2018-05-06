@@ -75,6 +75,7 @@ int main(int argc, char *argv[])
 
         while ( (input = readwordp(inputFile)) != NULL) {
             indexAdd(index, input, fileNum); // Add word to the index
+            free(input);
         }
 
         // Not sure if this is necessary but why not
