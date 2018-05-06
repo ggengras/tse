@@ -80,9 +80,9 @@ int main(int argc, char *argv[])
         inputFile = fopen(crawlerFilename, "r");
     }
     // Need this one more time
+    // Don't need to close FP bc it should be NULL at this point
     free(fileNumStr);
     free(crawlerFilename);
-    fclose(inputFile);
 
     // Create `indexFilename`, overwrite if it exists
     FILE *outputFile;
