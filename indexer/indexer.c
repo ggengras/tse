@@ -88,6 +88,7 @@ int main(int argc, char *argv[])
     }
     // Need this one more time
     // Don't need to close FP bc it should be NULL at this point
+    free(input);
     free(fileNumStr);
     free(crawlerFilename);
 
