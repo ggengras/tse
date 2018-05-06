@@ -68,7 +68,9 @@ int main(int argc, char *argv[])
     while (inputFile != NULL) {
         // Skip the first two lines of the file (find a better way to do this)
         char *input = readlinep(inputFile);
+        free(input);
         input = readlinep(inputFile);
+        free(input);
 
         while ( (input = readwordp(inputFile)) != NULL) {
             indexAdd(index, input, fileNum); // Add word to the index
