@@ -1,9 +1,7 @@
 /* 'Tiny' Search Engine
 *  Graeme Gengras, April 2018
 *
-* pagedir.h -
-*
-* See pagedir.h for full documentation
+* pagedir.h - A collection of functions for manipulating 'crawler' directories
 */
 
 #ifndef __PAGEDIR_H

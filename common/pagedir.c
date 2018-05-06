@@ -1,8 +1,14 @@
 /* 'Tiny' Search Engine
 *  Graeme Gengras, April 2018
 *
-* pagedir.c -
+* pagedir.c - A collection of functions for manipulating 'crawler' directories
+*
+* See pagedir.h for more information
 */
+
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE 1
+#endif
 
 #include "pagedir.h"
 #include "assert.h"
