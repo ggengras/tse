@@ -24,8 +24,8 @@ libcommon.a:
 
 .PHONY: test clean
 
-test: indexer indextext
-	./indexertest.sh
+test: indexer indextest
+	./indextest.sh
 
 clean:
 	rm -f *~ *.o

@@ -4,11 +4,11 @@
 #
 # usage example: ./indexsort.awk indexFilename > indexFilename.sorted
 # if that does not work, you may wish to try
-#   gawk -f indexsort.awk indexFilename > indexFilename.sorted 
+#   gawk -f indexsort.awk indexFilename > indexFilename.sorted
 #
 # David Kotz - April 2016, 2017
 
-# for each input line, 
+# for each input line,
 {
     # print the word
     printf "%s ", $1 | "sort";
@@ -33,4 +33,3 @@
 
 END {
 }
-
