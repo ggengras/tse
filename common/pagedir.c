@@ -45,3 +45,21 @@ bool savePage(webpage_t *page, char *pageDirectory, int ID) {
     fclose(outputFile);
     return true;
 }
+
+bool isCrawlerDir(char *pageDirectory) {
+    // Check for presence of `.crawler` file in `pageDirectory`
+    char *dirTest = "/.crawler";
+    char *filename = strCat(pageDirectory, dirTest); // Mallocs space!
+
+    assert(filename != NULL);
+
+    FILE *crawlerCheck;
+    if ( (crawlerCheck = fopen(filename, "r")) == NULL ) {
+        // Clean up
+        free(filename);
+        fclose(crawlerCheck);
+        return false;
+    } else {
+        return true;
+    }
+}

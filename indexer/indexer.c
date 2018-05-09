@@ -12,6 +12,7 @@
 
 #include <stdio.h>
 #include <assert.h>
+#include <stdbool.h>
 #include "file.h"
 #include "index.h"
 #include "pagedir.h"
@@ -31,25 +32,12 @@ int main(int argc, char *argv[])
 
     // Check for presence of `.crawler` file in `pageDirectory`
     char *pageDirectory = argv[1];
-    char *dirTest = "/.crawler";
-    char *filename = strCat(pageDirectory, dirTest); // Mallocs space!
-
-    assert(filename != NULL);
-
-    FILE *crawlerCheck;
-    if ( (crawlerCheck = fopen(filename, "r")) == NULL ) {
+    if (!isCrawlerDir(pageDirectory)) {
         fprintf(stderr,
             "Error: Specified directory does not contain valid crawler output\n");
 
-        // Clean up
-        free(filename);
-        fclose(crawlerCheck);
         exit(2);
     }
-
-    // Clean up
-    free(filename); // From strCat
-    fclose(crawlerCheck);
 
     // Read files from crawler output into the index
     index_t *index = indexNew(500); // Number of hashtable slots is hardcoded atm

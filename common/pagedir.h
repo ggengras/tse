@@ -23,4 +23,6 @@
  */
 bool savePage(webpage_t *page, char *pageDirectory, int ID);
 
+bool isCrawlerDir(char *pageDirectory);
+
 #endif //__PAGEDIR_H
