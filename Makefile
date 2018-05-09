@@ -1,10 +1,8 @@
 # Makefile for CS50 Tiny Search Engine
 #
-# David Kotz - April 2016, 2017
-# Xia Zhou - July 2017
 
 MAKE = make
-.PHONY: all valgrind clean
+.PHONY: all clean
 
 ############## default: make all libs and programs ##########
 all:
@@ -12,6 +10,7 @@ all:
 	$(MAKE) -C common
 	$(MAKE) -C crawler
 	$(MAKE) -C indexer
+	$(MAKE) -C querier
 
 ############### TAGS for emacs users ##########
 TAGS:  Makefile */Makefile */*.c */*.h */*.md */*.sh
@@ -25,3 +24,4 @@ clean:
 	$(MAKE) -C common clean
 	$(MAKE) -C crawler clean
 	$(MAKE) -C indexer clean
+	$(MAKE) -C querier clean
