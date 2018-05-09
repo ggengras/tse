@@ -23,6 +23,11 @@
  */
 bool savePage(webpage_t *page, char *pageDirectory, int ID);
 
+/* Checks to see if the specified directory is a valid directory
+ * of output from the crawler
+ *
+ * Returns `true` if it is, else `false`.
+ */
 bool isCrawlerDir(char *pageDirectory);
 
 #endif //__PAGEDIR_H

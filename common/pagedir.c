@@ -13,6 +13,7 @@
 #include "pagedir.h"
 #include "assert.h"
 #include "string.h"
+#include "glib.h"
 
 // * * * * * * * * Function Declarations * * * * //
 
