@@ -65,15 +65,15 @@ int main(int argc, char *argv[])
 
         char *word;
         int pos = 0;
-        while ((pos = webpage_getNextURL(currentPage, pos, &word)) > 0) { // MALLOCS
+        while ((pos = webpage_getNextWord(currentPage, pos, &word)) > 0) { // MALLOCS
             indexAdd(index, word, fileNum); // Add word to the index
             free(word);
         }
 
-        free(html);
+        //free(html);
         free(fileNumStr);
         free(crawlerFilename);
-        free(word);
+        //free(word);
         fclose(inputFile);
         webpage_delete(currentPage);
 
