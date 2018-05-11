@@ -17,6 +17,7 @@
 #include "index.h"
 #include "pagedir.h"
 #include "glib.h"
+#include "webpage.h"
 
 // * * * * * * * * Function Declarations * * * * * * * * //
 //          See implementation section for details       //
@@ -35,7 +36,6 @@ int main(int argc, char *argv[])
     if (!isCrawlerDir(pageDirectory)) {
         fprintf(stderr,
             "Error: Specified directory does not contain valid crawler output\n");
-
         exit(2);
     }
 
@@ -50,22 +50,32 @@ int main(int argc, char *argv[])
     FILE *inputFile = fopen(crawlerFilename, "r");
 
     // Iterate over files in pageDirectory
-    char *input;
     while (inputFile != NULL) {
-        // Skip the first two lines of the file (find a better way to do this)
-        input = readlinep(inputFile);
-        free(input);
-        input = readlinep(inputFile);
-        free(input);
+        // Read file into a webpage data type
+        char *url = readlinep(inputFile);
+        char *depthStr = readlinep(inputFile);
+        char *html = readfilep(inputFile);
 
-        while ( (input = readwordp(inputFile)) != NULL) {
-            indexAdd(index, input, fileNum); // Add word to the index
-            free(input);
+        int depth = atoi(depthStr); // Cast depth to int
+        webpage_t *currentPage = webpage_new(url, depth, html);
+
+        free(url);
+        free(depthStr);
+        // Can't free HTML yet because only the pointer is copied
+
+        char *word;
+        int pos = 0;
+        while ((pos = webpage_getNextURL(currentPage, pos, &word)) > 0) { // MALLOCS
+            indexAdd(index, word, fileNum); // Add word to the index
+            free(word);
         }
 
+        free(html);
         free(fileNumStr);
         free(crawlerFilename);
+        free(word);
         fclose(inputFile);
+        webpage_delete(currentPage);
 
         // Go to next file
         fileNum += 1;
