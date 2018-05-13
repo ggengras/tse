@@ -6,7 +6,7 @@
 # Compiler and flags
 CC=gcc
 CFLAGS=-Wall -pedantic -std=c11 -ggdb -I ../common -L ../common -lcommon \
-									  -I ../libcs50 -L ../libcs50 -lcs50
+									  -I ../libcs50 -L ../libcs50 -lcs50 -lcurl
 PROG=crawler
 
 all: $(PROG)
