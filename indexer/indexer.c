@@ -18,6 +18,7 @@
 #include "pagedir.h"
 #include "glib.h"
 #include "webpage.h"
+#include "word.h"
 
 // * * * * * * * * Function Declarations * * * * * * * * //
 //          See implementation section for details       //
@@ -63,9 +64,11 @@ int main(int argc, char *argv[])
         free(depthStr);
         // Can't free HTML yet because only the pointer is copied
 
+        // Find words
         char *word;
         int pos = 0;
         while ((pos = webpage_getNextWord(currentPage, pos, &word)) > 0) { // MALLOCS
+            NormalizeWord(word); // Lowercase
             indexAdd(index, word, fileNum); // Add word to the index
             free(word);
         }
