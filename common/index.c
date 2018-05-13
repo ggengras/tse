@@ -88,6 +88,14 @@ void indexSet(index_t *index, const char *word, const int docID, int count)
     }
 }
 
+/* Returns the item associated with the given word.
+ * Returns NULL if it can't find the word or the index is NULL
+ */
+counters_t *indexGet(index_t *index, const char *word) {
+    counters_t *item = hashtable_find(index->ht, word);
+    return item;
+}
+
 void indexDelete(index_t *index)
 {
     hashtable_delete(index->ht, (*deleteHelper));

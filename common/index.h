@@ -11,6 +11,7 @@
 
 #include <stdio.h>
 #include <stdbool.h>
+#include "counters.h"
 
 // * * * * * * * * Global Types * * * * * * * * //
 typedef struct index index_t;
@@ -58,6 +59,11 @@ void indexAdd(index_t *index, const char *word, const int docID);
  * If unsuccessful or incorrect arguments nothing happens
  */
 void indexSet(index_t *index, const char *word, const int docID, int count);
+
+/* Returns the item associated with the given word.
+ * Returns NULL if it can't find the word or the index is NULL
+ */
+counters_t *indexGet(index_t *index, const char *word);
 
 /* Delete the given index and clean up all allocated memory
  *
