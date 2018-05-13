@@ -17,10 +17,10 @@
 #include "counters.h"
 
 // Local types
-typedef struct twoCounters { // So I can call counters_iterate with 3 counters
+typedef struct counterPack { // So I can call counters_iterate with 3 counters
     counters_t *first;
     counters_t *second;
-} twoCounters_t;
+} counterPack_t;
 
 // Function declarations
 int checkInputFormat(char *input);
@@ -229,14 +229,46 @@ void wordSplit(char *input, char **words, int numWords) {
 }
 
 /*
- * scoreDocuments -
+ * scoreDocuments - Calculate 'scores' for documents that
+ * satisfy the given query (contained in words)
  */
 counters_t *scoreDocuments(char **words, int numWords, index_t *index) {
-    counters_t *wordOne = indexGet(index, words[0]);
-    counters_t *wordTwo = indexGet(index, words[1]);
-    counters_t *result = unionCounters(wordOne, wordTwo);
+    counters_t *total = indexGet(index, words[0]);
+    int i = 0;
+    while (i < numWords) {
+        // We can skip over 'and'
+        if (strcmp(words[i], "and") == 0) {
+            i++;
+            continue;
+        } else if (strcmp(words[i], "or") == 0) {
+            i++;
+            counters_t *subTotal = indexGet(index, words[i]);
+            // Until we see another or
+            while (strcmp(words[i + 1], "or") != 0 && i <= numWords - 2) {
+                // (Still skip ands)
+                if (strcmp(words[i], "and") == 0) {
+                    i++;
+                    continue;
+                }
+                counters_t *currentWord = indexGet(index, words[i]);
+                counters_t *newSubtotal = intersectCounters(subTotal, currentWord);
+                subTotal = newSubtotal;
+                i++;
+            }
+            counters_t *newTotal = unionCounters(total, subTotal);
+            total = newTotal;
+            i++;
+        } else { // word is normal, AND operator
+            counters_t *currentWord = indexGet(index, words[i]);
+            counters_t *newTotal = intersectCounters(total, currentWord);
+            total = newTotal;
+            i++;
+        }
+    }
+    counters_print(total, stdout);
 
-    counters_print(result, stdout);
+    // Delete all counters except for results
+
 }
 
 /*
@@ -247,15 +279,15 @@ counters_t *scoreDocuments(char **words, int numWords, index_t *index) {
 counters_t *intersectCounters(counters_t *wordOne, counters_t *wordTwo) {
     // Need this struct for for use w/ counters_iterate
     counters_t *result = counters_new();
-    twoCounters_t *twoCounters = malloc(sizeof(twoCounters_t)); // MALLOCS
-    twoCounters->first = wordOne;
-    twoCounters->second = result;
+    counterPack_t *counterPack = malloc(sizeof(counterPack_t)); // MALLOCS
+    counterPack->first = wordOne;
+    counterPack->second = result;
 
     // Iterate over wordOne, see if docID is in wordTwo.
-    counters_iterate(wordTwo, twoCounters, (*intersectCountersHelper));
-    return twoCounters->second;
+    counters_iterate(wordTwo, counterPack, (*intersectCountersHelper));
+    return counterPack->second;
 
-    free(twoCounters);
+    free(counterPack);
 }
 
 /*
@@ -263,16 +295,15 @@ counters_t *intersectCounters(counters_t *wordOne, counters_t *wordTwo) {
  */
 void intersectCountersHelper(void *arg, const int key, int count) {
     // Cast arg (is a counters_t *)
-    twoCounters_t *twoCounters = arg;
+    counterPack_t *counterPack = arg;
 
     // If key is in wordOne, set the counter to the minumum of the two counts
-    int oneCount = counters_get(twoCounters->first, key);
-    printf("%d %d\n", count, oneCount);
+    int oneCount = counters_get(counterPack->first, key);
     if (oneCount > 0) {
         if (count < oneCount) {
-            counters_set(twoCounters->second, key, count);
+            counters_set(counterPack->second, key, count);
         } else {
-            counters_set(twoCounters->second, key, oneCount);
+            counters_set(counterPack->second, key, oneCount);
         }
     }
 }
@@ -285,18 +316,18 @@ void intersectCountersHelper(void *arg, const int key, int count) {
 counters_t *unionCounters(counters_t *wordOne, counters_t *wordTwo) {
     // Need this struct for for use w/ counters_iterate
     counters_t *result = counters_new();
-    twoCounters_t *twoCounters = malloc(sizeof(twoCounters_t)); // MALLOCS
-    twoCounters->first = wordOne;
-    twoCounters->second = result;
+    counterPack_t *counterPack = malloc(sizeof(counterPack_t)); // MALLOCS
+    counterPack->first = wordOne;
+    counterPack->second = result;
 
     // Iterate over wordOne, see if docID is in wordTwo.
     // Iterate twice because we need to collect ALL docIDs in both counters
-    counters_iterate(wordTwo, twoCounters, (*unionCountersHelper));
-    counters_iterate(wordOne, twoCounters, (*unionCountersHelper));
+    counters_iterate(wordTwo, counterPack, (*unionCountersHelper));
+    counters_iterate(wordOne, counterPack, (*unionCountersHelper));
 
-    return twoCounters->second;
+    return counterPack->second;
 
-    free(twoCounters);
+    free(counterPack);
 }
 
 /*
@@ -304,17 +335,17 @@ counters_t *unionCounters(counters_t *wordOne, counters_t *wordTwo) {
  */
 void unionCountersHelper(void *arg, const int key, int count) {
     // Cast arg (is a counters_t *)
-    twoCounters_t *twoCounters = arg;
+    counterPack_t *counterPack = arg;
 
     // If key is in wordOne, set the counter to the minumum of the two counts
-    int oneCount = counters_get(twoCounters->first, key);
+    int oneCount = counters_get(counterPack->first, key);
     if (oneCount > 0) {
         if (count < oneCount) {
-            counters_set(twoCounters->second, key, count);
+            counters_set(counterPack->second, key, count);
         } else {
-            counters_set(twoCounters->second, key, oneCount);
+            counters_set(counterPack->second, key, oneCount);
         }
     } else {
-        counters_set(twoCounters->second, key, count);
+        counters_set(counterPack->second, key, count);
     }
 }
