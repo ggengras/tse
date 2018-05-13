@@ -47,7 +47,8 @@ int main(int argc, char *argv[]) {
     }
 
     // Load the index file
-    index_t *index = indexNew(500); // Hardcoded index length for now
+    int nLines = lines_in_file(indexFile);
+    index_t *index = indexNew(nLines); // Hardcoded index length for now
     indexLoad(index, indexFile);
 
     // Retrieve a query
