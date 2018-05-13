@@ -16,7 +16,8 @@
 #include "word.h"
 
 // Function declarations
-int validateInput(char *input);
+int checkInputLogic(char **words, int numWords);
+int checkInputFormat(char *input);
 void wordSplit(char *input, char **words, int numWords);
 
 int main(int argc, char *argv[]) {
@@ -51,23 +52,33 @@ int main(int argc, char *argv[]) {
 
     // Retrieve a query
     char *input;
-    while ((int)(input = readlinep(stdin)) != EOF) { // MALLOCS SPACE!
-        // split into words
+    while (1) {
+        printf("[Query]: ");
+        if ((int)(input = readlinep(stdin)) == EOF) { // MALLOCS SPACE!
+            // exit if EOF
+            break;
+        }
 
-        int numWords = validateInput(input);
+        // Make sure input is valid
+        int numWords = checkInputFormat(input);
         if (numWords == 0) {
             printf("Error: query is empty or contains invalid characters.\n");
             continue;
         }
-        printf("numWords %d\n", numWords);
 
-        // Allocate word array accordingly
+        // Make array of words in input
         char *words[numWords];
         assert(words != NULL);
 
-        // Make array of words in input
         wordSplit(input, words, numWords); // MALLOCS
 
+        // Check input logic (make sure ands and ors are in correct locations)
+        if (!checkInputLogic(words, numWords)) {
+            printf("Error: query contains invalid logic\n");
+            continue;
+        }
+
+        // Print clean query
         printf("Evaluating query: ");
         for (int i = 0; i < numWords; i++) {
             printf("%s ", words[i]);
@@ -87,9 +98,11 @@ int main(int argc, char *argv[]) {
 }
 
 /*
- * validateInput -
+ * checkInputFormat - Checks format of input string.  If string is valid,
+ * returns the number of words in the string.  If string is invalid
+ * (blank space or has non-alpha characters) returns 0;
  */
-int validateInput(char *input) {
+int checkInputFormat(char *input) {
     // count non-alpha characters and spaces
     char *iteratorInvalid = input;
     int nonalpha = 0;
@@ -137,6 +150,41 @@ int validateInput(char *input) {
 }
 
 
+/*
+ * checkInputLogic - Checks the placement of 'and' and 'or' in a list of words.
+ * If the list can be evaluated logically, returns 1, if it can't returns 0.
+ */
+int checkInputLogic(char **words, int numWords) {
+    // First word can't be logic
+    if (strcmp(words[0], "and") == 0 || strcmp(words[0], "or") == 0 ) {
+        return 0;
+    }
+
+    // Last word can't be logic
+    if (strcmp(words[numWords - 1], "and") == 0
+      || strcmp(words[numWords - 1], "or") == 0 ) {
+        return 0;
+    }
+
+    // 'and' must have non-logic words on either side
+    for (int i = 1; i < numWords - 1; i++) {
+        if (strcmp(words[i], "and") == 0) {
+            if (strcmp(words[i - 1], "and") == 0) {
+                return 0;
+            }
+            if (strcmp(words[i - 1], "or") == 0) {
+                return 0;
+            }
+            if (strcmp(words[i + 1], "and") == 0) {
+                return 0;
+            }
+            if (strcmp(words[i + 1], "or") == 0) {
+                return 0;
+            }
+        }
+    }
+    return 1;
+}
 
 /*
  * wordSplit - takes an input string and splits it into an array of words

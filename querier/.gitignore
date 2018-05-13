@@ -1,3 +1,5 @@
 # Files created by make
 querier
 *.dSYM
+indexer_test_output
+invalidqueries
