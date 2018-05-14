@@ -83,7 +83,7 @@ int main(int argc, char *argv[]) {
     char *input;
     while (1) {
         printf("[Query]: ");
-        if ((input = readlinep(stdin)) == EOF) { // MALLOCS SPACE!
+        if ((input = readlinep(stdin)) == NULL) { // MALLOCS SPACE!
             // exit if EOF
             free(input);
             break;
