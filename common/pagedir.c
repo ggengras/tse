@@ -61,6 +61,8 @@ bool isCrawlerDir(char *pageDirectory) {
         fclose(crawlerCheck);
         return false;
     } else {
+        free(filename);
+        fclose(crawlerCheck);
         return true;
     }
 }
