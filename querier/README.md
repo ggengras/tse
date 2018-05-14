@@ -6,6 +6,8 @@
 index file created by `indexer.c` to parse queries from the user.  The querier
 returns a list of documents / webpages that satisfy the given query.
 
+Still has some memory leaks (deadlines ...)
+
 For instance:
 
 ```
