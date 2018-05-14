@@ -45,4 +45,4 @@ mkdir $TESTDIR/wiki_crawl
 ../indexer/indexer $TESTDIR/wiki_crawl $TESTDIR/wiki_crawl_index
 
 cd querier_test_output
-../querier wiki_crawl wiki_crawl_index
+../querier wiki_crawl wiki_crawl_index < ../testqueries
