@@ -86,7 +86,6 @@ int main(int argc, char *argv[]) {
         if ((input = readlinep(stdin)) == NULL) { // MALLOCS SPACE!
             // exit if EOF
             printf("\n");
-            free(input);
             break;
         }
 
@@ -163,6 +162,7 @@ int main(int argc, char *argv[]) {
         free(input);
     }
 
+    free(input);
     indexDelete(index);
     return 0;
 }
